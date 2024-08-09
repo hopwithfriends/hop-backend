@@ -1,0 +1,6 @@
+{
+  "json.validate.enable": false,
+  "[json]": {
+    "json.validate.enable": false
+  }
+}
