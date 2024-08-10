@@ -10,8 +10,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-	res.send("hello");
+app.get("/api", (req, res) => {
+	res.send("Hi, welcome to Hop API!");
 });
 
 // ! Setup SENTRY for deployment
