@@ -5,7 +5,7 @@ export const roleEnum = pgEnum("role", [
 	"anonymous",
 	"member",
 	"editor",
-	"admin",
+	"owner",
 ]);
 
 export const themeEnum = pgEnum("theme", ["default"]);

@@ -1,7 +1,7 @@
 import { eq, and, not } from "drizzle-orm";
 import { db } from "../server";
 import { spaces, spaceMembers } from "./schema";
-import type { Space, SpaceMember, RolesEnum,ThemesEnum } from "../types";
+import type { Space, SpaceMember, RolesEnum, ThemesEnum } from "../types";
 import { SpaceSchema, SpaceMemberSchema, RoleEnum } from "../types";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ export class SpaceMethods {
 		name: string,
 		flyUrl: string,
 		userId: string,
-		theme : ThemesEnum = "default"
+		theme: ThemesEnum = "default",
 	): Promise<Space | null> {
 		try {
 			// ! FLASK SDK INTERACTION NEEDS TO CONFIRM CREATION FIRST
@@ -22,7 +22,7 @@ export class SpaceMethods {
 					theme,
 				};
 
-				console.log(space)
+				console.log(space);
 
 				const validatedSpace = SpaceSchema.parse(space);
 
@@ -35,10 +35,10 @@ export class SpaceMethods {
 					const spaceMember: SpaceMember = {
 						spaceId: createdSpace[0].id,
 						userId,
-						role: "admin",
+						role: "owner",
 					};
 
-					console.log(spaceMember)
+					console.log(spaceMember);
 
 					const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
 
@@ -113,7 +113,7 @@ export class SpaceMethods {
 				.from(spaceMembers)
 				.innerJoin(spaces, eq(spaceMembers.spaceId, spaces.id))
 				.where(
-					and(eq(spaceMembers.userId, userId), eq(spaceMembers.role, "admin")),
+					and(eq(spaceMembers.userId, userId), eq(spaceMembers.role, "owner")),
 				);
 
 			return adminSpaces;
@@ -137,7 +137,7 @@ export class SpaceMethods {
 				.where(
 					and(
 						eq(spaceMembers.userId, userId),
-						not(eq(spaceMembers.role, "admin")),
+						not(eq(spaceMembers.role, "owner")),
 					),
 				);
 
