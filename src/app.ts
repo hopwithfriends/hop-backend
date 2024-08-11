@@ -3,6 +3,8 @@ import Sentry from "@sentry/node";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
+import userRouter from "./routes/user";
+import spaceRouter from "./routes/space";
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -13,6 +15,9 @@ app.use(express.json());
 app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
+
+app.use("/api/user", userRouter)
+app.use("/api/space", spaceRouter)
 
 // ! Setup SENTRY for deployment
 /*
