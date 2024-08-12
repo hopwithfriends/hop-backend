@@ -1,22 +1,27 @@
-import { eq, and, not } from "drizzle-orm";
-import { db } from "../server";
-import { spaces, spaceMembers } from "./schema";
-import type { Space, SpaceMember, RolesEnum, ThemesEnum } from "../types";
-import { SpaceSchema, SpaceMemberSchema, RoleEnum } from "../types";
+import { and, eq, not } from "drizzle-orm";
 import { z } from "zod";
+import { db } from "../server";
+import type {
+	RolesEnumType,
+	SpaceMemberType,
+	SpaceType,
+	ThemesEnumType,
+} from "../types";
+import { RoleEnum, SpaceMemberSchema, SpaceSchema } from "../types";
+import { spaceMembers, spaces } from "./schema";
 
 export class SpaceMethods {
 	async insertSpace(
 		name: string,
 		flyUrl: string,
 		userId: string,
-		theme: ThemesEnum = "default",
-	): Promise<Space | null> {
+		theme: ThemesEnumType = "default",
+	): Promise<SpaceType | null> {
 		try {
 			// ! FLASK SDK INTERACTION NEEDS TO CONFIRM CREATION FIRST
 
 			return await db.transaction(async (tx) => {
-				const space: Space = {
+				const space: SpaceType = {
 					name,
 					flyUrl,
 					theme,
@@ -32,7 +37,7 @@ export class SpaceMethods {
 					.returning();
 
 				if (createdSpace[0].id) {
-					const spaceMember: SpaceMember = {
+					const spaceMember: SpaceMemberType = {
 						spaceId: createdSpace[0].id,
 						userId,
 						role: "owner",
@@ -77,10 +82,10 @@ export class SpaceMethods {
 	async addUserToSpace(
 		spaceId: string,
 		userId: string,
-		role: RolesEnum,
+		role: RolesEnumType,
 	): Promise<boolean> {
 		try {
-			const spaceMember: SpaceMember = {
+			const spaceMember: SpaceMemberType = {
 				spaceId,
 				userId,
 				role,
@@ -101,7 +106,7 @@ export class SpaceMethods {
 		}
 	}
 
-	async findOwnedSpaces(userId: string): Promise<Space[]> {
+	async findOwnedSpaces(userId: string): Promise<SpaceType[]> {
 		try {
 			const adminSpaces = await db
 				.select({
@@ -123,7 +128,7 @@ export class SpaceMethods {
 		}
 	}
 
-	async findInvitedSpaces(userId: string): Promise<Space[]> {
+	async findInvitedSpaces(userId: string): Promise<SpaceType[]> {
 		try {
 			const memberSpaces = await db
 				.select({

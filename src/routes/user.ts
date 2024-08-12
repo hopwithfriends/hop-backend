@@ -14,11 +14,10 @@ userRouter.post(
 	userController.postFriendController,
 );
 userRouter.delete(
-"/friend/:userId/:friendId",
+	"/friend/:userId/:friendId",
 	userController.deleteFriendController,
 );
 
 userRouter.get("/friend/:userId", userController.getAllFriends);
 
-
-export default userRouter
+export default userRouter;
