@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import app from "./app";
 import { client } from "./models";
 import * as schema from "./models/schema";
-const PORT = Number(process.env.PORT) || 4000;
+const PORT = process.env.PORT || 10000;
 
 declare global {
 	namespace Express {
@@ -22,7 +22,7 @@ async function startServer() {
 			new Date().toLocaleString() + chalk.yellow(" Connected to Database"),
 		);
 
-		app.listen(PORT, "0.0.0.0", () => {
+		app.listen(PORT, () => {
 			console.log(chalk.green(`Server listening on port ${PORT}`));
 		});
 	} catch (error) {
