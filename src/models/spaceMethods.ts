@@ -1,4 +1,5 @@
 import { and, eq, not } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { db } from "../server";
 import type {
@@ -9,7 +10,6 @@ import type {
 } from "../types";
 import { SpaceMemberSchema, SpaceSchema } from "../types";
 import { spaceMembers, spaces } from "./schema";
-import { v4 as uuidv4 } from "uuid";
 
 const FLY_API_URL = process.env.FLY_API_URL || "http://localhost:5000/api/apps";
 
@@ -20,7 +20,7 @@ export class SpaceMethods {
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
 		try {
-			const appName = `${name.replace(/ /g,'')}-${uuidv4()}`;
+			const appName = `${name.replace(/ /g, "")}-${uuidv4()}`;
 
 			// SDK
 			try {
@@ -85,12 +85,16 @@ export class SpaceMethods {
 
 	async deleteSpace(spaceId: string): Promise<boolean> {
 		try {
-			
-			const spaceToDelete = await db.select().from(spaces).where(eq(spaces.id, spaceId))
+			const spaceToDelete = await db
+				.select()
+				.from(spaces)
+				.where(eq(spaces.id, spaceId));
 
-			if(!spaceToDelete) return false
-			
-			const appName = (spaceToDelete[0].flyUrl.match(/(?<=https:\/\/).*?(?=\.fly\.dev)/) || [null])[0];
+			if (!spaceToDelete) return false;
+
+			const appName = (spaceToDelete[0].flyUrl.match(
+				/(?<=https:\/\/).*?(?=\.fly\.dev)/,
+			) || [null])[0];
 
 			try {
 				const response = await fetch(FLY_API_URL, {
@@ -109,7 +113,6 @@ export class SpaceMethods {
 			} catch (error) {
 				throw error as Error;
 			}
-
 
 			return await db.transaction(async (tx) => {
 				await tx.delete(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
