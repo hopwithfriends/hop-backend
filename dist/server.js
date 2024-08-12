@@ -37077,7 +37077,7 @@ async function startServer() {
   try {
     await client.connect();
     console.log(new Date().toLocaleString() + source_default.yellow(" Connected to Database"));
-    app_default.listen(PORT, "0.0.0.0", () => {
+    app_default.listen(PORT, () => {
       console.log(source_default.green(`Server listening on port ${PORT}`));
     });
   } catch (error) {
@@ -37085,7 +37085,7 @@ async function startServer() {
     process.exit(1);
   }
 }
-var PORT = Number(process.env.PORT) || 4000;
+var PORT = process.env.PORT || 1e4;
 var db3 = drizzle(client, { schema: exports_schema });
 startServer();
 export {
