@@ -1,6 +1,6 @@
+import { z } from "zod";
 import { db } from "../server";
 import { users } from "./schema";
-import { z } from "zod";
 
 class AuthMethods {
 	async insertUser(userId: string) {

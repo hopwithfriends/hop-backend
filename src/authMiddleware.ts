@@ -1,5 +1,5 @@
-import type { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+import type { NextFunction, Request, Response } from "express";
 import type { StackWebhookDataType } from "./types";
 
 dotenv.config();

@@ -3,10 +3,10 @@ import cors from "cors";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
+import { authMiddleware } from "./authMiddleware";
+import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
-import { authRouter } from "./routes/auth";
-import { authMiddleware } from "./authMiddleware";
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
