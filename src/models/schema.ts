@@ -1,69 +1,74 @@
 import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-//Enums
+// Enums
 export const roleEnum = pgEnum("role", [
 	"anonymous",
 	"member",
 	"editor",
-	"admin",
+	"owner",
 ]);
 
 export const themeEnum = pgEnum("theme", ["default"]);
 
-//Tables
-//User Table
+// TABLES
+// User Table
 export const users = pgTable("users", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	username: text("username").notNull().unique(),
 	nickname: text("nickname").notNull(),
-	profilePicture: text("profilePicture").notNull(),
+	profilePicture: text("profile_picture").notNull(),
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const usersCredentials = pgTable("usersCredentials", {
+export const usersCredentials = pgTable("users_credentials", {
 	email: text("email").notNull().unique(),
 	password: text("password").notNull(),
-	userId: uuid("userId").references(() => users.id),
+	userId: uuid("user_id")
+		.references(() => users.id, { onDelete: "cascade" })
+		.notNull(),
 });
 
-//Space Table
+// Space Table
 export const spaces = pgTable("spaces", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	name: text("name").notNull(),
-	flyUrl: text("flyUrl").notNull().unique(),
+	flyUrl: text("fly_url").notNull().unique(),
 	theme: themeEnum("theme").notNull(),
 });
 
-//Relational Tables
+// RELATIONAL TABLES
+// Friends Table
 export const friends = pgTable("friends", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	userId: uuid("userId")
+	userId: uuid("user_id")
 		.notNull()
-		.references(() => users.id, {onDelete: 'cascade'}),
-	friendId: uuid("friendId")
+		.references(() => users.id, { onDelete: "cascade" }),
+	friendId: uuid("friend_id")
 		.notNull()
-		.references(() => users.id, {onDelete: 'cascade'}),
+		.references(() => users.id, { onDelete: "cascade" }),
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const spaceMembers = pgTable("spaceMembers", {
+// Space Members Table
+export const spaceMembers = pgTable("space_members", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	spaceId: uuid("spaceId")
+	spaceId: uuid("space_id")
 		.notNull()
-		.references(() => spaces.id, {onDelete: 'cascade'}),
-	userId: uuid("userId")
+		.references(() => spaces.id, { onDelete: "cascade" }),
+	userId: uuid("user_id")
 		.notNull()
-		.references(() => users.id, {onDelete: 'cascade'}),
+		.references(() => users.id, { onDelete: "cascade" }),
 	role: roleEnum("role").notNull(),
 	lastConnection: timestamp("last_connection"),
 });
 
-export const userStatus = pgTable("userStatus", {
+// User Status Table
+export const userStatus = pgTable("user_status", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	userId: uuid("userId")
+	userId: uuid("user_id")
 		.notNull()
-		.references(() => users.id, {onDelete: 'cascade'}),
-	spaceId: uuid("spaceId")
-		.notNull()
-		.references(() => spaces.id, {onDelete: 'cascade'}),
+		.references(() => users.id, { onDelete: "cascade" }),
+	spaceId: uuid("space_id").references(() => spaces.id, {
+		onDelete: "cascade",
+	}),
 });
