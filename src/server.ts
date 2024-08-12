@@ -3,7 +3,15 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import app from "./app";
 import { client } from "./models";
 import * as schema from "./models/schema";
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
+
+declare global {
+	namespace Express {
+		interface Request {
+			user: string;
+		}
+	}
+}
 
 app.listen(PORT, async () => {
 	await client
