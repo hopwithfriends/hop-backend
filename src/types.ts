@@ -48,6 +48,23 @@ export const UserStatusSchema = z.object({
 	spaceId: z.string().uuid(),
 });
 
+export const StackWebhookDataSchema = z.object({
+	id: z.string(),
+	primary_email_verified: z.boolean(),
+	signed_up_at_millis: z.number(),
+	has_password: z.boolean(),
+	// selected_team: z.object(),
+	selected_team_id: z.string(),
+	profile_image_url: z.string(),
+	// client_metadata: z.object(),
+	// server_metadata: z.object(),
+});
+
+export const StackWebhookSchema = z.object({
+	event: z.string(),
+	data: StackWebhookDataSchema,
+});
+
 // Typescript Types inferred from Zod Schemas
 export type UserType = z.infer<typeof UserSchema>;
 export type UserCredentialsType = z.infer<typeof UserCredentialSchema>;
@@ -57,3 +74,6 @@ export type SpaceMemberType = z.infer<typeof SpaceMemberSchema>;
 export type UserStatusType = z.infer<typeof UserStatusSchema>;
 export type RolesEnumType = z.infer<typeof RoleSchema>;
 export type ThemesEnumType = z.infer<typeof ThemeSchema>;
+
+export type StackWebhookDataType = z.infer<typeof StackWebhookDataSchema>;
+export type StackWebhookType = z.infer<typeof StackWebhookSchema>;

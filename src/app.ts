@@ -3,6 +3,8 @@ import cors from "cors";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
+import { authMiddleware } from "./authMiddleware";
+import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
 const app = express();
@@ -16,6 +18,9 @@ app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
 
+app.use(authMiddleware);
+
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/space", spaceRouter);
 
