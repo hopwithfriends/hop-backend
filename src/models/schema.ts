@@ -14,9 +14,9 @@ export const themeEnum = pgEnum("theme", ["default"]);
 // User Table
 export const users = pgTable("users", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	username: text("username").notNull().unique(),
-	nickname: text("nickname").notNull(),
-	profilePicture: text("profile_picture").notNull(),
+	username: text("username").unique(),
+	nickname: text("nickname"),
+	profilePicture: text("profile_picture"),
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
