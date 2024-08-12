@@ -1,21 +1,22 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 import { db } from "../server";
 import { users, usersCredentials, friends } from "./schema";
-import type { UserCredentials, User } from "../types";
+import type { UserCredentialsType, UserType } from "../types";
 import { UserCredentialSchema, UserSchema } from "../types";
 import { z } from "zod";
 
 export class UserMethods {
-	async findAllUsers() {
+	async findAllUsers(): Promise<UserType[] | null> {
 		try {
 			const allUsers = await db.select().from(users);
 			return allUsers;
 		} catch (error) {
 			console.log(error);
+			return null;
 		}
 	}
 
-	async findUserById(userId: string): Promise<User | null> {
+	async findUserById(userId: string): Promise<UserType | null> {
 		try {
 			const user = await db.select().from(users).where(eq(users.id, userId));
 			if (user.length > 0) {
@@ -33,18 +34,18 @@ export class UserMethods {
 		email: string,
 		profilePicture: string,
 		nickname: string = username,
-	): Promise<User | null> {
-		let createdUser: User[];
+	): Promise<UserType | null> {
+		let createdUser: UserType[];
 		try {
 			// ! This is still very mocklike, hashing + auth not done
 			return await db.transaction(async (tx) => {
 				try {
-					const user: User = {
+					const user: UserType = {
 						username: username,
 						nickname: nickname,
 						profilePicture: profilePicture,
 					};
-					const userCredentials: UserCredentials = {
+					const userCredentials: UserCredentialsType = {
 						email: email,
 						password: password,
 					};
@@ -86,9 +87,7 @@ export class UserMethods {
 					await tx
 						.delete(usersCredentials)
 						.where(eq(usersCredentials.userId, userId));
-					await tx
-						.delete(users)
-						.where(eq(users.id, userId))
+					await tx.delete(users).where(eq(users.id, userId));
 					return true;
 				} catch (error) {
 					tx.rollback();
@@ -179,7 +178,7 @@ export class UserMethods {
 		}
 	}
 
-	async findAllFriends(userId: string): Promise<User[]> {
+	async findAllFriends(userId: string): Promise<UserType[]> {
 		try {
 			const friendIds = await db
 				.select({ friendId: friends.friendId })

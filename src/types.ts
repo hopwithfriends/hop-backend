@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-//Enums
+// Enums
 const ThemeEnum = ["default"] as const; // ! Still not fully defined
-export const RoleEnum = ["anonymous", "member", "editor", "admin"] as const; // ! Still not fully defined
+export const RoleEnum = ["anonymous", "member", "editor", "owner"] as const; // ! Still not fully defined
 
 export const RoleSchema = z.enum(RoleEnum);
-export const ThemeSchema = z.enum(ThemeEnum)
+export const ThemeSchema = z.enum(ThemeEnum);
 
-//Zod Schemas
+// Zod Schemas
 export const UserSchema = z.object({
 	id: z.string().uuid().optional(),
 	username: z.string().min(1),
@@ -48,12 +48,12 @@ export const UserStatusSchema = z.object({
 	spaceId: z.string().uuid(),
 });
 
-//Types for every schema
-export type User = z.infer<typeof UserSchema>;
-export type UserCredentials = z.infer<typeof UserCredentialSchema>;
-export type Space = z.infer<typeof SpaceSchema>;
-export type Friend = z.infer<typeof FriendSchema>;
-export type SpaceMember = z.infer<typeof SpaceMemberSchema>;
-export type UserStatus = z.infer<typeof UserStatusSchema>;
-export type RolesEnum = z.infer<typeof RoleSchema>;
-export type ThemesEnum = z.infer<typeof ThemeSchema>;
+// Typescript Types inferred from Zod Schemas
+export type UserType = z.infer<typeof UserSchema>;
+export type UserCredentialsType = z.infer<typeof UserCredentialSchema>;
+export type SpaceType = z.infer<typeof SpaceSchema>;
+export type FriendType = z.infer<typeof FriendSchema>;
+export type SpaceMemberType = z.infer<typeof SpaceMemberSchema>;
+export type UserStatusType = z.infer<typeof UserStatusSchema>;
+export type RolesEnumType = z.infer<typeof RoleSchema>;
+export type ThemesEnumType = z.infer<typeof ThemeSchema>;
