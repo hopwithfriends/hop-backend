@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx tsx --watch src/server",
+    "start":"node ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
     "seed": "npx tsx src/models/seed/seed",
