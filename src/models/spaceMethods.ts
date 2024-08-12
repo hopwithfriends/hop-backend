@@ -1,4 +1,5 @@
 import { and, eq, not } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { db } from "../server";
 import type {
@@ -7,18 +8,40 @@ import type {
 	SpaceType,
 	ThemesEnumType,
 } from "../types";
+const FLY_API_URL = process.env.FLY_API_URL || "http://localhost:5000/api/apps";
 import { RoleEnum, SpaceMemberSchema, SpaceSchema } from "../types";
 import { spaceMembers, spaces } from "./schema";
 
 export class SpaceMethods {
 	async insertSpace(
 		name: string,
-		flyUrl: string,
 		userId: string,
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
 		try {
-			// ! FLASK SDK INTERACTION NEEDS TO CONFIRM CREATION FIRST
+			const appName = `${name.replace(/ /g, "")}-${uuidv4()}`;
+
+			// SDK
+			try {
+				const response = await fetch(FLY_API_URL, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						app_name: appName,
+					}),
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+			} catch (error) {
+				throw error as Error;
+			}
+
+			// IF SDK CONFIRMED
+			const flyUrl = `https://${appName}.fly.dev`;
 
 			return await db.transaction(async (tx) => {
 				const space: SpaceType = {
@@ -26,8 +49,6 @@ export class SpaceMethods {
 					flyUrl,
 					theme,
 				};
-
-				console.log(space);
 
 				const validatedSpace = SpaceSchema.parse(space);
 
@@ -42,8 +63,6 @@ export class SpaceMethods {
 						userId,
 						role: "owner",
 					};
-
-					console.log(spaceMember);
 
 					const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
 
@@ -65,7 +84,34 @@ export class SpaceMethods {
 
 	async deleteSpace(spaceId: string): Promise<boolean> {
 		try {
-			// ! FLASK SDK INTERACTION NEEDS TO CONFIRM DELETION FIRST
+			const spaceToDelete = await db
+				.select()
+				.from(spaces)
+				.where(eq(spaces.id, spaceId));
+
+			if (!spaceToDelete) return false;
+
+			const appName = (spaceToDelete[0].flyUrl.match(
+				/(?<=https:\/\/).*?(?=\.fly\.dev)/,
+			) || [null])[0];
+
+			try {
+				const response = await fetch(FLY_API_URL, {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						app_name: appName,
+					}),
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+			} catch (error) {
+				throw error as Error;
+			}
 
 			return await db.transaction(async (tx) => {
 				await tx.delete(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
