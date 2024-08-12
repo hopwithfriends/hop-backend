@@ -9,8 +9,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
 		"seed": "npx tsx src/models/seed/seed",
-		"lint": "npx @biomejs/biome lint --write",
-		"format": "npx @biomejs/biome format --write"
+		"lint": "npx @biomejs/biome lint --write && npx @biomejs/biome format --write && npx @biomejs/biome check --write"
 	},
 	"keywords": [],
 	"author": "",

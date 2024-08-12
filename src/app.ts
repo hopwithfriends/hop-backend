@@ -1,10 +1,10 @@
-import express from "express";
 import Sentry from "@sentry/node";
 import cors from "cors";
+import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
-import userRouter from "./routes/user";
 import spaceRouter from "./routes/space";
+import userRouter from "./routes/user";
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

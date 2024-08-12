@@ -1,10 +1,10 @@
+import fs from "node:fs";
+import path, { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parse } from "csv-parse";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { client } from "..";
 import * as schema from "../schema";
-import { parse } from "csv-parse";
-import path, { dirname, join } from "node:path";
-import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 
 const db = drizzle(client, { schema });
 

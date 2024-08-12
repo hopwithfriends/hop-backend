@@ -1,8 +1,8 @@
-import app from "./app";
-import * as schema from "./models/schema";
-import { client } from "./models";
-import { drizzle } from "drizzle-orm/node-postgres";
 import chalk from "chalk";
+import { drizzle } from "drizzle-orm/node-postgres";
+import app from "./app";
+import { client } from "./models";
+import * as schema from "./models/schema";
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {

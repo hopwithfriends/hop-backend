@@ -1,9 +1,9 @@
 import { and, eq, inArray, or } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "../server";
-import { users, usersCredentials, friends } from "./schema";
 import type { UserCredentialsType, UserType } from "../types";
 import { UserCredentialSchema, UserSchema } from "../types";
-import { z } from "zod";
+import { friends, users, usersCredentials } from "./schema";
 
 export class UserMethods {
 	async findAllUsers(): Promise<UserType[] | null> {
