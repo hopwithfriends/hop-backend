@@ -11,7 +11,7 @@
 		"migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
 		"seed": "npx tsx src/models/seed/seed",
 		"lint": "npx @biomejs/biome lint --write && npx @biomejs/biome format --write && npx @biomejs/biome check --write",
-		"build": "bun build ./src/server.ts --outdir ./dist"
+		"build": "bun build ./src/server.ts --target=node --outdir ./dist"
 	},
 	"keywords": [],
 	"author": "",
