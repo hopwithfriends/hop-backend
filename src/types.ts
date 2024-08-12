@@ -18,7 +18,7 @@ export const UserSchema = z.object({
 export const UserCredentialSchema = z.object({
 	email: z.string().email(),
 	password: z.string(),
-	userId: z.string().uuid().optional(),
+	userId: z.string().uuid(),
 });
 
 export const SpaceSchema = z.object({
