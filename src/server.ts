@@ -20,6 +20,5 @@ app.listen(PORT, async () => {
 		});
 });
 
-
 const db = drizzle(client, { schema });
 export { db };

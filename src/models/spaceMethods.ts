@@ -1,7 +1,12 @@
 import { eq, and, not } from "drizzle-orm";
 import { db } from "../server";
 import { spaces, spaceMembers } from "./schema";
-import type { SpaceType, SpaceMemberType, RolesEnumType, ThemesEnumType } from "../types";
+import type {
+	SpaceType,
+	SpaceMemberType,
+	RolesEnumType,
+	ThemesEnumType,
+} from "../types";
 import { SpaceSchema, SpaceMemberSchema, RoleEnum } from "../types";
 import { z } from "zod";
 

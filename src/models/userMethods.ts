@@ -45,7 +45,7 @@ export class UserMethods {
 						nickname: nickname,
 						profilePicture: profilePicture,
 					};
-					const userCredentials: Omit<UserCredentialsType, 'userId'>  = {
+					const userCredentials: Omit<UserCredentialsType, "userId"> = {
 						email: email,
 						password: password,
 					};

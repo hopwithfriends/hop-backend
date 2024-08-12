@@ -16,8 +16,8 @@ app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
 
-app.use("/api/user", userRouter)
-app.use("/api/space", spaceRouter)
+app.use("/api/user", userRouter);
+app.use("/api/space", spaceRouter);
 
 // ! Setup SENTRY for deployment
 /*
