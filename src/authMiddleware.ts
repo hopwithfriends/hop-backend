@@ -20,27 +20,32 @@ export const authMiddleware = async (
 	next: NextFunction,
 ) => {
 	const publicEndpoints = ["/api/auth", "/api", "/api-docs"];
-	if (publicEndpoints.includes(req.url)) next();
+	if (publicEndpoints.includes(req.url)) {
+		return next();
+	}
 
 	const accessToken = req.headers["x-stack-access-token"];
 	const refreshToken = req.headers["x-stack-refresh-token"];
-	if (typeof accessToken === "string" && typeof refreshToken === "string") {
-		const stackHeaders = generateStackHeaders(accessToken, refreshToken);
-		if (!stackHeaders) {
-			res.sendStatus(500);
-			return;
-		}
 
+	if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
+		return res.status(403).send("Forbidden: JWTs not provided");
+	}
+	const stackHeaders = generateStackHeaders(accessToken, refreshToken);
+	if (!stackHeaders) {
+		return res.status(500).send("Internal sever error");
+	}
+
+	try {
 		const isAuthenticated = await authenticateUser(stackHeaders);
 		if (!isAuthenticated) {
-			res.sendStatus(403);
-			return;
+			return res.sendStatus(403);
 		}
 		req.user = isAuthenticated;
 		console.log(req.user);
 		next();
-	} else {
-		res.sendStatus(500);
+	} catch (error) {
+		console.error(`Authentication error: ${error}`);
+		res.status(500).send("Internal server error");
 	}
 };
 
