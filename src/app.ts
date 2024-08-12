@@ -5,6 +5,8 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
+import { authRouter } from "./routes/auth";
+import { authMiddleware } from "./authMiddleware";
 const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -16,6 +18,9 @@ app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
 
+app.use(authMiddleware);
+
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/space", spaceRouter);
 
