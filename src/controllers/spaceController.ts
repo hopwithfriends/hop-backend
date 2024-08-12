@@ -4,10 +4,9 @@ import spaceMethods from "../models/spaceMethods";
 class SpaceController {
 	async postSpace(req: Request, res: Response): Promise<void> {
 		try {
-			const { name, flyUrl, userId, theme } = req.body;
+			const { name,  userId, theme } = req.body;
 			const newSpace = await spaceMethods.insertSpace(
 				name,
-				flyUrl,
 				userId,
 				theme,
 			);
