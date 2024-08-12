@@ -1,9 +1,14 @@
-import { eq, and, not } from "drizzle-orm";
-import { db } from "../server";
-import { spaces, spaceMembers } from "./schema";
-import type { SpaceType, SpaceMemberType, RolesEnumType, ThemesEnumType } from "../types";
-import { SpaceSchema, SpaceMemberSchema, RoleEnum } from "../types";
+import { and, eq, not } from "drizzle-orm";
 import { z } from "zod";
+import { db } from "../server";
+import type {
+	RolesEnumType,
+	SpaceMemberType,
+	SpaceType,
+	ThemesEnumType,
+} from "../types";
+import { RoleEnum, SpaceMemberSchema, SpaceSchema } from "../types";
+import { spaceMembers, spaces } from "./schema";
 
 export class SpaceMethods {
 	async insertSpace(
