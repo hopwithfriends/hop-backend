@@ -32483,7 +32483,7 @@ var import_dotenv = __toESM(require_main(), 1);
 import_dotenv.default.config();
 var STACK_API = "https://api.stack-auth.com/v1/api/users/me";
 var authMiddleware = async (req, res, next) => {
-  const publicEndpoints = ["/api/auth", "/api"];
+  const publicEndpoints = ["/api/auth", "/api", "/api-docs"];
   if (publicEndpoints.includes(req.url))
     next();
   const accessToken = req.headers["x-stack-access-token"];
@@ -32502,6 +32502,8 @@ var authMiddleware = async (req, res, next) => {
     req.user = isAuthenticated;
     console.log(req.user);
     next();
+  } else {
+    res.sendStatus(500);
   }
 };
 var generateStackHeaders = (accessToken, refreshToken) => {
