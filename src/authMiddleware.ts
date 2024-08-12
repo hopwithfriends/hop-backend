@@ -19,7 +19,7 @@ export const authMiddleware = async (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const publicEndpoints = ["/api/auth", "/api"];
+	const publicEndpoints = ["/api/auth", "/api", "/api-docs"];
 	if (publicEndpoints.includes(req.url)) next();
 
 	const accessToken = req.headers["x-stack-access-token"];
@@ -39,6 +39,8 @@ export const authMiddleware = async (
 		req.user = isAuthenticated;
 		console.log(req.user);
 		next();
+	} else {
+		res.sendStatus(500);
 	}
 };
 
