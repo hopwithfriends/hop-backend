@@ -6,21 +6,13 @@ import { UserCredentialSchema, UserSchema } from "../types";
 import { friends, users, usersCredentials } from "./schema";
 
 export class UserMethods {
-	async findAllUsers(): Promise<UserType[] | null> {
-		try {
-			const allUsers = await db.select().from(users);
-			return allUsers;
-		} catch (error) {
-			console.log(error);
-			return null;
-		}
-	}
-
 	async findUserById(userId: string): Promise<UserType | null> {
 		try {
 			const user = await db.select().from(users).where(eq(users.id, userId));
 			if (user.length > 0) {
-				return user[0];
+				const validatedUser = UserSchema.parse(user[0]);
+				if (!validatedUser) return null;
+				return validatedUser;
 			}
 			return null;
 		} catch (error) {
@@ -28,48 +20,24 @@ export class UserMethods {
 			return null;
 		}
 	}
-	async insertUser(
-		username: string,
-		password: string,
-		email: string,
-		profilePicture: string,
-		nickname: string = username,
+
+	async updateUser(
+		userId: string,
+		data: Omit<UserType, "id">,
 	): Promise<UserType | null> {
 		let createdUser: UserType[];
 		try {
-			// ! This is still very mocklike, hashing + auth not done
-			return await db.transaction(async (tx) => {
-				try {
-					const user: UserType = {
-						username: username,
-						nickname: nickname,
-						profilePicture: profilePicture,
-					};
-					const userCredentials: Omit<UserCredentialsType, "userId"> = {
-						email: email,
-						password: password,
-					};
+			const validatedData = UserSchema.omit({ id: true }).parse(data);
+			const updatedUser = await db
+				.update(users)
+				.set(validatedData)
+				.where(eq(users.id, userId))
+				.returning();
 
-					const validatedUser = UserSchema.parse(user);
-					const validatedUserCredentials =
-						UserCredentialSchema.parse(userCredentials);
+			const validatedUpdatedUser = UserSchema.parse(updatedUser);
 
-					createdUser = await tx
-						.insert(users)
-						.values(validatedUser)
-						.returning();
-
-					if (createdUser[0].id) {
-						validatedUserCredentials.userId = createdUser[0].id;
-						await tx.insert(usersCredentials).values(validatedUserCredentials);
-						return createdUser[0];
-					}
-					return null;
-				} catch (error) {
-					await tx.rollback();
-					throw error;
-				}
-			});
+			if (!validatedUpdatedUser) return null;
+			return validatedUpdatedUser;
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				console.error("Validation failed:", error.errors);
@@ -78,26 +46,6 @@ export class UserMethods {
 			}
 			return null;
 		}
-	}
-
-	async deleteUser(userId: string): Promise<boolean> {
-		try {
-			await db.transaction(async (tx) => {
-				try {
-					await tx
-						.delete(usersCredentials)
-						.where(eq(usersCredentials.userId, userId));
-					await tx.delete(users).where(eq(users.id, userId));
-					return true;
-				} catch (error) {
-					tx.rollback();
-					throw error;
-				}
-			});
-		} catch (error) {
-			console.log(error);
-		}
-		return false;
 	}
 
 	async insertFriend(userId: string, friendId: string): Promise<boolean> {

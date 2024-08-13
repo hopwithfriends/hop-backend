@@ -9,7 +9,7 @@ const STACK_API = "https://api.stack-auth.com/api/v1/users/me";
 type StackHeadersType = {
 	"x-stack-access-type": string;
 	"x-stack-project-id": string;
-	"x-stack-server-secret": string;
+	"x-stack-secret-server-key": string;
 	"x-stack-access-token": string;
 	"x-stack-refresh-token": string;
 };
@@ -26,8 +26,18 @@ export const authMiddleware = async (
 
 	const accessToken = req.headers["x-stack-access-token"];
 	const refreshToken = req.headers["x-stack-refresh-token"];
+<<<<<<< Updated upstream
 	console.log("accessToken:", accessToken);
 	console.log("refreshToken:", refreshToken);
+=======
+<<<<<<< Updated upstream
+	if (typeof accessToken === "string" && typeof refreshToken === "string") {
+		const stackHeaders = generateStackHeaders(accessToken, refreshToken);
+		if (!stackHeaders) {
+			res.sendStatus(500);
+			return;
+=======
+>>>>>>> Stashed changes
 
 	if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
 		return res.status(403).send("Forbidden: JWTs not provided");
@@ -37,13 +47,20 @@ export const authMiddleware = async (
 		return res.status(500).send("Internal sever error");
 	}
 
+<<<<<<< Updated upstream
 	console.log("stackHeaders:", stackHeaders);
 
+=======
+>>>>>>> Stashed changes
 	try {
 		const isAuthenticated = await authenticateUser(stackHeaders);
 
 		if (!isAuthenticated) {
 			return res.sendStatus(403);
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 		}
 
 		req.user = isAuthenticated;
@@ -67,7 +84,7 @@ const generateStackHeaders = (
 		return {
 			"x-stack-access-type": "server",
 			"x-stack-project-id": projectId,
-			"x-stack-server-secret": serverSecretKey,
+			"x-stack-secret-server-key": serverSecretKey,
 			"x-stack-access-token": accessToken,
 			"x-stack-refresh-token": refreshToken,
 		};

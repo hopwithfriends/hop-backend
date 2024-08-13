@@ -2,21 +2,26 @@ import type { Request, Response } from "express";
 import userMethods from "../models/userMethods";
 
 class UserController {
-	async getAllUsers(req: Request, res: Response): Promise<void> {
-		try {
-			const users = await userMethods.findAllUsers();
-			res.status(200).send(users);
-		} catch (error) {
-			res.status(500).send("Could not fetch users!");
-		}
-	}
-
 	async getOneUser(req: Request, res: Response): Promise<void> {
 		try {
+<<<<<<< Updated upstream
 			const { user } = req;
 			const userById = await userMethods.findUserById(user);
 			if (userById) {
 				res.status(200).send(userById);
+=======
+<<<<<<< Updated upstream
+			const { id } = req.params;
+			const user = await userMethods.findUserById(id);
+			if (user) {
+				res.status(200).send(user);
+=======
+			const userId = req.user;
+			const userById = await userMethods.findUserById(userId);
+			if (userById) {
+				res.status(200).send(userById);
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			} else {
 				res.status(404).send("User not found!");
 			}
@@ -25,18 +30,20 @@ class UserController {
 		}
 	}
 
-	async postUser(req: Request, res: Response): Promise<void> {
+	async putUser(req: Request, res: Response): Promise<void> {
 		try {
-			const { username, password, email, profilePicture, nickname } = req.body;
-			const newUser = await userMethods.insertUser(
+			const userId = req.user;
+			const { username, profilePicture, nickname } = req.body;
+
+			const userData = {
 				username,
-				password,
-				email,
-				profilePicture,
 				nickname,
-			);
-			if (newUser) {
-				res.status(201).send(newUser);
+				profilePicture,
+			};
+
+			const updatedUser = await userMethods.updateUser(userId, userData);
+			if (updatedUser) {
+				res.status(201).send(updatedUser);
 			} else {
 				res.status(500).send("Could not create user!");
 			}
@@ -45,25 +52,10 @@ class UserController {
 		}
 	}
 
-	async deleteUser(req: Request, res: Response): Promise<void> {
-		try {
-			const { id } = req.params;
-			const deletedUser = await userMethods.deleteUser(id);
-
-			if (deletedUser) {
-				res.status(202).send("User deleted!");
-			} else {
-				res.status(404).send("User not found!");
-			}
-		} catch (error) {
-			res.status(500).send("Could not delete user!");
-		}
-	}
-
 	async postFriendController(req: Request, res: Response): Promise<void> {
 		try {
-			const userId = req.params.userId;
-			const friendId = req.params.friendId;
+			const userId = req.user;
+			const { friendId } = req.params;
 
 			if (!userId || !friendId) {
 				res.status(400).send("Missing userId or friendId");
@@ -86,7 +78,8 @@ class UserController {
 
 	async deleteFriendController(req: Request, res: Response): Promise<void> {
 		try {
-			const { userId, friendId } = req.params;
+			const userId = req.user;
+			const { friendId } = req.params;
 
 			if (!userId || !friendId) {
 				res.status(400).send("Missing userId or friendId");
@@ -107,7 +100,7 @@ class UserController {
 
 	async getAllFriends(req: Request, res: Response): Promise<void> {
 		try {
-			const { userId } = req.params;
+			const userId = req.user;
 			const users = await userMethods.findAllFriends(userId);
 			res.status(200).send(users);
 		} catch (error) {

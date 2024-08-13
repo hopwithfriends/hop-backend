@@ -4,7 +4,8 @@ import spaceMethods from "../models/spaceMethods";
 class SpaceController {
 	async postSpace(req: Request, res: Response): Promise<void> {
 		try {
-			const { name, userId, theme } = req.body;
+			const userId = req.user;
+			const { name, theme } = req.body;
 			const newSpace = await spaceMethods.insertSpace(name, userId, theme);
 			if (newSpace) {
 				res.status(201).send(newSpace);
@@ -33,7 +34,8 @@ class SpaceController {
 
 	async postUserToSpace(req: Request, res: Response): Promise<void> {
 		try {
-			const { spaceId, userId, role } = req.body;
+			const userId = req.user;
+			const { spaceId, role } = req.body;
 			const addedMember = await spaceMethods.addUserToSpace(
 				spaceId,
 				userId,
@@ -52,7 +54,7 @@ class SpaceController {
 
 	async getAdminSpaces(req: Request, res: Response): Promise<void> {
 		try {
-			const { userId } = req.params;
+			const userId = req.user;
 			const adminSpaces = await spaceMethods.findOwnedSpaces(userId);
 			res.status(200).send(adminSpaces);
 		} catch (error) {
@@ -62,7 +64,7 @@ class SpaceController {
 
 	async getInvitedSpaces(req: Request, res: Response): Promise<void> {
 		try {
-			const { userId } = req.params;
+			const userId = req.user;
 			const memberSpaces = await spaceMethods.findInvitedSpaces(userId);
 			res.status(200).send(memberSpaces);
 		} catch (error) {

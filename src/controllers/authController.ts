@@ -3,7 +3,7 @@ import authMethods from "../models/authMethods";
 
 // Mock data from Stack webhook
 // {
-//   "event": "user.created",
+//   "type": "user.created",
 //   "data": {
 //     "id": "2209422a-eef7-4668-967d-be79409972c5",
 //   }
@@ -21,7 +21,13 @@ class AuthController {
 				} else {
 					res.status(500).send("Failed to register user!");
 				}
+<<<<<<< Updated upstream
 			} else if (type ==="user.deleted") {
+=======
+<<<<<<< Updated upstream
+=======
+			} else if (type === "user.deleted") {
+>>>>>>> Stashed changes
 				const userId = data.id;
 				const deletedUser = await authMethods.deleteUser(userId);
 				if (deletedUser) {
@@ -29,6 +35,10 @@ class AuthController {
 				} else {
 					res.status(500).send("Failed to delete user!");
 				}
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			} else {
 				console.error(`Failed to process event type: ${type}`);
 				res.status(500).send("Failed to process event");
