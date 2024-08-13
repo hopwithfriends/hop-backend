@@ -3,7 +3,7 @@ import authMethods from "../models/authMethods";
 
 // Mock data from Stack webhook
 // {
-//   "event": "user.created",
+//   "type": "user.created",
 //   "data": {
 //     "id": "2209422a-eef7-4668-967d-be79409972c5",
 //   }
@@ -12,8 +12,8 @@ import authMethods from "../models/authMethods";
 class AuthController {
 	async postEvent(req: Request, res: Response) {
 		try {
-			const { event, data } = req.body;
-			if (event === "user.created") {
+			const { type, data } = req.body;
+			if (type === "user.created") {
 				const userId = data.id;
 				const newUser = await authMethods.insertUser(userId);
 				if (newUser) {
@@ -21,8 +21,16 @@ class AuthController {
 				} else {
 					res.status(500).send("Failed to register user!");
 				}
+			} else if (type === "user.deleted") {
+				const userId = data.id;
+				const deletedUser = await authMethods.deleteUser(userId);
+				if (deletedUser) {
+					res.status(200).send(deletedUser);
+				} else {
+					res.status(500).send("Failed to delete user!");
+				}
 			} else {
-				console.error(`Failed to process event type: ${event}`);
+				console.error(`Failed to process event type: ${type}`);
 				res.status(500).send("Failed to process event");
 			}
 		} catch (error) {

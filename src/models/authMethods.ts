@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../server";
 import { users } from "./schema";
@@ -16,6 +17,18 @@ class AuthMethods {
 			// Improve error handling here!
 			console.error(error);
 			throw new Error("Failed to register user!");
+		}
+	}
+	async deleteUser(userId: string) {
+		try {
+			const deletedUser = await db
+				.delete(users)
+				.where(eq(users.id, userId))
+				.returning();
+			return deletedUser[0];
+		} catch (error) {
+			console.error(error);
+			throw new Error("Failed to delete user!");
 		}
 	}
 }
