@@ -1,7 +1,7 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../server";
 import { users } from "./schema";
-import { eq } from "drizzle-orm";
 
 class AuthMethods {
 	async insertUser(userId: string) {
@@ -21,7 +21,10 @@ class AuthMethods {
 	}
 	async deleteUser(userId: string) {
 		try {
-			const deletedUser = await db.delete(users).where(eq(users.id, userId)).returning();
+			const deletedUser = await db
+				.delete(users)
+				.where(eq(users.id, userId))
+				.returning();
 			return deletedUser[0];
 		} catch (error) {
 			console.error(error);
