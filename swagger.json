@@ -1,408 +1,377 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Hop API",
-    "version": "1.0.0",
-    "description": "API for managing users, spaces, and friendships in the Hop application"
-  },
-  "paths": {
-    "/api": {
-      "get": {
-        "summary": "Welcome message",
-        "tags": [
-          "Info"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user": {
-      "get": {
-        "summary": "Get current user",
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      },
-      "put": {
-        "summary": "Update user",
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Could not update user"
-          }
-        }
-      }
-    },
-    "/api/user/friend/{friendId}": {
-      "post": {
-        "summary": "Add a friend",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "name": "friendId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Friend added successfully"
-          },
-          "400": {
-            "description": "Failed to add friend"
-          },
-          "500": {
-            "description": "Error adding friend"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a friend",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "name": "friendId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Friend deleted successfully"
-          },
-          "404": {
-            "description": "Friendship not found"
-          },
-          "500": {
-            "description": "Error deleting friend"
-          }
-        }
-      }
-    },
-    "/api/user/friend": {
-      "get": {
-        "summary": "Get all friends of the current user",
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Could not fetch users"
-          }
-        }
-      }
-    },
-    "/api/space": {
-      "post": {
-        "summary": "Create a new space",
-        "tags": [
-          "Space"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewSpace"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Space created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Space"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Could not create space"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
-    "/api/space/{id}": {
-      "delete": {
-        "summary": "Delete a space",
-        "tags": [
-          "Space"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Space deleted successfully"
-          },
-          "400": {
-            "description": "Space not found"
-          },
-          "500": {
-            "description": "Could not delete space"
-          }
-        }
-      }
-    },
-    "/api/space/addUser": {
-      "post": {
-        "summary": "Add a user to a space",
-        "tags": [
-          "Space"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddUserToSpace"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User added to space successfully"
-          },
-          "400": {
-            "description": "Could not add user to space"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
-    "/api/space/myspaces": {
-      "get": {
-        "summary": "Get spaces where user is admin",
-        "tags": [
-          "Space"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Space"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Could not fetch your spaces"
-          }
-        }
-      }
-    },
-    "/api/space/invitedspaces": {
-      "get": {
-        "summary": "Get spaces where user is invited",
-        "tags": [
-          "Space"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Space"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Could not fetch your invited spaces"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "username": {
-            "type": "string"
-          },
-          "nickname": {
-            "type": "string"
-          },
-          "profilePicture": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "UpdateUser": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "nickname": {
-            "type": "string"
-          },
-          "profilePicture": {
-            "type": "string"
-          }
-        }
-      },
-      "NewSpace": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "theme": {
-            "type": "string",
-            "enum": [
-              "default"
-            ]
-          }
-        }
-      },
-      "Space": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "flyUrl": {
-            "type": "string"
-          },
-          "theme": {
-            "type": "string",
-            "enum": [
-              "default"
-            ]
-          }
-        }
-      },
-      "AddUserToSpace": {
-        "type": "object",
-        "properties": {
-          "spaceId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "anonymous",
-              "member",
-              "editor",
-              "owner"
-            ]
-          }
-        }
-      }
-    }
-  }
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Hop API",
+		"version": "1.0.0",
+		"description": "API for managing users, spaces, and friendships in the Hop application"
+	},
+	"paths": {
+		"/api": {
+			"get": {
+				"summary": "Welcome message",
+				"tags": ["Info"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user": {
+			"get": {
+				"summary": "Get current user",
+				"tags": ["User"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "User not found"
+					},
+					"500": {
+						"description": "Server error"
+					}
+				}
+			},
+			"put": {
+				"summary": "Update user",
+				"tags": ["User"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateUser"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "User updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Could not update user"
+					}
+				}
+			}
+		},
+		"/api/user/friend/{friendId}": {
+			"post": {
+				"summary": "Add a friend",
+				"tags": ["User"],
+				"parameters": [
+					{
+						"name": "friendId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Friend added successfully"
+					},
+					"400": {
+						"description": "Failed to add friend"
+					},
+					"500": {
+						"description": "Error adding friend"
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete a friend",
+				"tags": ["User"],
+				"parameters": [
+					{
+						"name": "friendId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "Friend deleted successfully"
+					},
+					"404": {
+						"description": "Friendship not found"
+					},
+					"500": {
+						"description": "Error deleting friend"
+					}
+				}
+			}
+		},
+		"/api/user/friend": {
+			"get": {
+				"summary": "Get all friends of the current user",
+				"tags": ["User"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/User"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Could not fetch users"
+					}
+				}
+			}
+		},
+		"/api/space": {
+			"post": {
+				"summary": "Create a new space",
+				"tags": ["Space"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewSpace"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Space created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Space"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Could not create space"
+					},
+					"500": {
+						"description": "Server error"
+					}
+				}
+			}
+		},
+		"/api/space/{id}": {
+			"delete": {
+				"summary": "Delete a space",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "Space deleted successfully"
+					},
+					"400": {
+						"description": "Space not found"
+					},
+					"500": {
+						"description": "Could not delete space"
+					}
+				}
+			}
+		},
+		"/api/space/addUser": {
+			"post": {
+				"summary": "Add a user to a space",
+				"tags": ["Space"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddUserToSpace"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "User added to space successfully"
+					},
+					"400": {
+						"description": "Could not add user to space"
+					},
+					"500": {
+						"description": "Server error"
+					}
+				}
+			}
+		},
+		"/api/space/myspaces": {
+			"get": {
+				"summary": "Get spaces where user is admin",
+				"tags": ["Space"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Space"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Could not fetch your spaces"
+					}
+				}
+			}
+		},
+		"/api/space/invitedspaces": {
+			"get": {
+				"summary": "Get spaces where user is invited",
+				"tags": ["Space"],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Space"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Could not fetch your invited spaces"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"User": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"profilePicture": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"UpdateUser": {
+				"type": "object",
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"profilePicture": {
+						"type": "string"
+					}
+				}
+			},
+			"NewSpace": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"theme": {
+						"type": "string",
+						"enum": ["default"]
+					}
+				}
+			},
+			"Space": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					},
+					"flyUrl": {
+						"type": "string"
+					},
+					"theme": {
+						"type": "string",
+						"enum": ["default"]
+					}
+				}
+			},
+			"AddUserToSpace": {
+				"type": "object",
+				"properties": {
+					"spaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"role": {
+						"type": "string",
+						"enum": ["anonymous", "member", "editor", "owner"]
+					}
+				}
+			}
+		}
+	}
 }
