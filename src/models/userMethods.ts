@@ -10,9 +10,7 @@ export class UserMethods {
 		try {
 			const user = await db.select().from(users).where(eq(users.id, userId));
 			if (user.length > 0) {
-				const validatedUser = UserSchema.parse(user[0]);
-				if (!validatedUser) return null;
-				return validatedUser;
+				return user[0];
 			}
 			return null;
 		} catch (error) {
