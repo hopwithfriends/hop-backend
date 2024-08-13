@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import app from "./app";
 import { client } from "./models";
 import * as schema from "./models/schema";
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 8080;
 
 declare global {
 	namespace Express {

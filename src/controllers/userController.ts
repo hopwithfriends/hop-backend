@@ -13,10 +13,10 @@ class UserController {
 
 	async getOneUser(req: Request, res: Response): Promise<void> {
 		try {
-			const { id } = req.params;
-			const user = await userMethods.findUserById(id);
-			if (user) {
-				res.status(200).send(user);
+			const { user } = req;
+			const userById = await userMethods.findUserById(user);
+			if (userById) {
+				res.status(200).send(userById);
 			} else {
 				res.status(404).send("User not found!");
 			}
