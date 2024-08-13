@@ -4,7 +4,7 @@ export const userRouter = express.Router();
 
 // Basic
 userRouter.get("/", userController.getOneUser);
-userRouter.post("/", userController.putUser);
+userRouter.put("/", userController.putUser);
 
 // Friend
 userRouter.post("/friend/:friendId", userController.postFriendController);

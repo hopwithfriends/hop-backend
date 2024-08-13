@@ -26,7 +26,7 @@
 		},
 		"/api/user": {
 			"get": {
-				"summary": "Get all users",
+				"summary": "Get current user",
 				"tags": ["User"],
 				"responses": {
 					"200": {
@@ -34,35 +34,35 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "#/components/schemas/User"
-									}
+									"$ref": "#/components/schemas/User"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "User not found"
 					},
 					"500": {
 						"description": "Server error"
 					}
 				}
 			},
-			"post": {
-				"summary": "Create a new user",
+			"put": {
+				"summary": "Update user",
 				"tags": ["User"],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/NewUser"
+								"$ref": "#/components/schemas/UpdateUser"
 							}
 						}
 					}
 				},
 				"responses": {
 					"201": {
-						"description": "User created successfully",
+						"description": "User updated successfully",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -72,83 +72,16 @@
 						}
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Could not update user"
 					}
 				}
 			}
 		},
-		"/api/user/{id}": {
-			"get": {
-				"summary": "Get a user by ID",
-				"tags": ["User"],
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Successful response",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/User"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "User not found"
-					},
-					"500": {
-						"description": "Server error"
-					}
-				}
-			},
-			"delete": {
-				"summary": "Delete a user",
-				"tags": ["User"],
-				"parameters": [
-					{
-						"name": "id",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"202": {
-						"description": "User deleted successfully"
-					},
-					"404": {
-						"description": "User not found"
-					},
-					"500": {
-						"description": "Server error"
-					}
-				}
-			}
-		},
-		"/api/user/friend/{userId}/{friendId}": {
+		"/api/user/friend/{friendId}": {
 			"post": {
 				"summary": "Add a friend",
 				"tags": ["User"],
 				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
 					{
 						"name": "friendId",
 						"in": "path",
@@ -166,7 +99,7 @@
 						"description": "Failed to add friend"
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Error adding friend"
 					}
 				}
 			},
@@ -174,14 +107,6 @@
 				"summary": "Delete a friend",
 				"tags": ["User"],
 				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
 					{
 						"name": "friendId",
 						"in": "path",
@@ -199,25 +124,15 @@
 						"description": "Friendship not found"
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Error deleting friend"
 					}
 				}
 			}
 		},
-		"/api/user/friend/{userId}": {
+		"/api/user/friend": {
 			"get": {
-				"summary": "Get all friends of a user",
+				"summary": "Get all friends of the current user",
 				"tags": ["User"],
-				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "Successful response",
@@ -233,7 +148,7 @@
 						}
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Could not fetch users"
 					}
 				}
 			}
@@ -294,7 +209,7 @@
 						"description": "Space not found"
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Could not delete space"
 					}
 				}
 			}
@@ -326,20 +241,10 @@
 				}
 			}
 		},
-		"/api/space/myspaces/{userId}": {
+		"/api/space/myspaces": {
 			"get": {
 				"summary": "Get spaces where user is admin",
 				"tags": ["Space"],
-				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "Successful response",
@@ -355,25 +260,15 @@
 						}
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Could not fetch your spaces"
 					}
 				}
 			}
 		},
-		"/api/space/invitedspaces/{userId}": {
+		"/api/space/invitedspaces": {
 			"get": {
 				"summary": "Get spaces where user is invited",
 				"tags": ["Space"],
-				"parameters": [
-					{
-						"name": "userId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "Successful response",
@@ -389,7 +284,7 @@
 						}
 					},
 					"500": {
-						"description": "Server error"
+						"description": "Could not fetch your invited spaces"
 					}
 				}
 			}
@@ -397,27 +292,6 @@
 	},
 	"components": {
 		"schemas": {
-			"NewUser": {
-				"type": "object",
-				"properties": {
-					"username": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"profilePicture": {
-						"type": "string"
-					},
-					"nickname": {
-						"type": "string"
-					}
-				},
-				"required": ["username", "password", "email", "profilePicture"]
-			},
 			"User": {
 				"type": "object",
 				"properties": {
@@ -440,24 +314,31 @@
 					}
 				}
 			},
+			"UpdateUser": {
+				"type": "object",
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"profilePicture": {
+						"type": "string"
+					}
+				}
+			},
 			"NewSpace": {
 				"type": "object",
 				"properties": {
 					"name": {
 						"type": "string"
 					},
-					"flyUrl": {
-						"type": "string"
-					},
-					"userId": {
-						"type": "string"
-					},
 					"theme": {
 						"type": "string",
 						"enum": ["default"]
 					}
-				},
-				"required": ["name", "flyUrl", "userId"]
+				}
 			},
 			"Space": {
 				"type": "object",
@@ -482,93 +363,12 @@
 				"type": "object",
 				"properties": {
 					"spaceId": {
-						"type": "string"
-					},
-					"userId": {
-						"type": "string"
-					},
-					"role": {
-						"type": "string",
-						"enum": ["anonymous", "member", "editor", "admin"]
-					}
-				},
-				"required": ["spaceId", "userId", "role"]
-			},
-			"UserCredentials": {
-				"type": "object",
-				"properties": {
-					"email": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"userId": {
-						"type": "string",
-						"format": "uuid"
-					}
-				}
-			},
-			"Friend": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"userId": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"friendId": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				}
-			},
-			"SpaceMember": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"spaceId": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"userId": {
 						"type": "string",
 						"format": "uuid"
 					},
 					"role": {
 						"type": "string",
-						"enum": ["anonymous", "member", "editor", "admin"]
-					},
-					"lastConnection": {
-						"type": "string",
-						"format": "date-time"
-					}
-				}
-			},
-			"UserStatus": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"userId": {
-						"type": "string",
-						"format": "uuid"
-					},
-					"spaceId": {
-						"type": "string",
-						"format": "uuid"
+						"enum": ["anonymous", "member", "editor", "owner"]
 					}
 				}
 			}
