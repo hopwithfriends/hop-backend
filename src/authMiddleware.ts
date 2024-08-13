@@ -20,6 +20,7 @@ export const authMiddleware = async (
 	next: NextFunction,
 ) => {
 	const publicEndpoints = ["/api/auth", "/api", "/api-docs"];
+
 	if (publicEndpoints.includes(req.url)) {
 		return next();
 	}
