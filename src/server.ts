@@ -18,9 +18,7 @@ const db = drizzle(client, { schema });
 async function startServer() {
 	try {
 		await client.connect();
-		console.log(
-			`${new Date().toLocaleString()} + Connected to Database`,
-		);
+		console.log(`${new Date().toLocaleString()} + Connected to Database`);
 
 		app.listen(PORT, () => {
 			console.log(`Server listening on port ${PORT}`);

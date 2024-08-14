@@ -41,7 +41,7 @@ export const seedDatabase = async (
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const readCSV = async (filename: string): Promise<any[]> => {
-	const filePath = `src/testing/seed/seed_data/${filename}`
+	const filePath = `src/testing/seed/seed_data/${filename}`;
 	try {
 		const fileContent = await fs.promises.readFile(filePath, "utf-8");
 		return new Promise((resolve, reject) => {
@@ -71,5 +71,3 @@ const readCSV = async (filename: string): Promise<any[]> => {
 		throw error;
 	}
 };
-
-
