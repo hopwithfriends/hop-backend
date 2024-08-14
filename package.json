@@ -7,10 +7,11 @@
 	"scripts": {
 		"dev": "npx tsx --watch src/server",
 		"start": "node ./dist/server.js",
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "jest",
 		"migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
 		"lint": "npx @biomejs/biome lint --write && npx @biomejs/biome format --write && npx @biomejs/biome check --write",
-		"build": "bun build ./src/server.ts --target=node --outdir ./dist"
+		"build": "bun build ./src/server.ts --target=node --outdir ./dist",
+		"seed": "npx tsx src/testing/seed/seed.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -35,8 +36,10 @@
 		"zod": "^3.24.0-canary.20240701T200529"
 	},
 	"devDependencies": {
+		"@babel/preset-env": "^7.25.3",
 		"@biomejs/biome": "1.8.3",
 		"@flydotio/dockerfile": "^0.5.8",
+		"@jest/globals": "^29.7.0",
 		"@types/cors": "^2.8.17",
 		"@types/jest": "^29.5.12",
 		"@types/node": "^22.2.0",
