@@ -20,14 +20,6 @@ export const users = pgTable("users", {
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const usersCredentials = pgTable("users_credentials", {
-	email: text("email").notNull().unique(),
-	password: text("password").notNull(),
-	userId: uuid("user_id")
-		.references(() => users.id, { onDelete: "cascade" })
-		.notNull(),
-});
-
 // Space Table
 export const spaces = pgTable("spaces", {
 	id: uuid("id").primaryKey().defaultRandom(),

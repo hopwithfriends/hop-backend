@@ -9,7 +9,6 @@
 		"start": "node ./dist/server.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
-		"seed": "npx tsx src/models/seed/seed",
 		"lint": "npx @biomejs/biome lint --write && npx @biomejs/biome format --write && npx @biomejs/biome check --write",
 		"build": "bun build ./src/server.ts --target=node --outdir ./dist"
 	},
@@ -41,6 +40,7 @@
 		"@types/cors": "^2.8.17",
 		"@types/jest": "^29.5.12",
 		"@types/node": "^22.2.0",
+		"@types/pg": "^8.11.6",
 		"@types/supertest": "^6.0.2",
 		"@types/swagger-ui-express": "^4.1.6",
 		"@types/uuid": "^10.0.0",
