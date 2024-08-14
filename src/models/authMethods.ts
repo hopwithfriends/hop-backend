@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 import { db } from "../server";
 import { users } from "./schema";
 

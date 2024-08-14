@@ -15,12 +15,6 @@ export const UserSchema = z.object({
 	profilePicture: z.string().nullable(),
 });
 
-export const UserCredentialSchema = z.object({
-	email: z.string().email(),
-	password: z.string(),
-	userId: z.string().uuid(),
-});
-
 export const SpaceSchema = z.object({
 	id: z.string().uuid().optional(),
 	name: z.string().min(1),
@@ -67,7 +61,6 @@ export const StackWebhookSchema = z.object({
 
 // Typescript Types inferred from Zod Schemas
 export type UserType = z.infer<typeof UserSchema>;
-export type UserCredentialsType = z.infer<typeof UserCredentialSchema>;
 export type SpaceType = z.infer<typeof SpaceSchema>;
 export type FriendType = z.infer<typeof FriendSchema>;
 export type SpaceMemberType = z.infer<typeof SpaceMemberSchema>;
