@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
+import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
-import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "../models/schema";
 
 //mock client
@@ -13,21 +13,20 @@ const mockClient = new pg.Client({
 
 export { mockClient };
 
-
 //clear DB
 async function deleteAllData(connectionString: string) {
-  const db = drizzle(mockClient, { schema });
+	const db = drizzle(mockClient, { schema });
 
-  try {
-    await db.transaction(async (tx) => {
-      for (const table of Object.values(schema)) {
-        if (typeof table === 'object' && 'name' in table) {
-          await tx.delete(table);
-        }
-      }
-    });
-    console.log('All data deleted successfully.');
-  } catch (error) {
-    console.error('Error deleting data:', error);
-}
+	try {
+		await db.transaction(async (tx) => {
+			for (const table of Object.values(schema)) {
+				if (typeof table === "object" && "name" in table) {
+					await tx.delete(table);
+				}
+			}
+		});
+		console.log("All data deleted successfully.");
+	} catch (error) {
+		console.error("Error deleting data:", error);
+	}
 }

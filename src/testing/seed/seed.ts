@@ -3,8 +3,8 @@ import path, { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { mockClient } from "../mock";
 import * as schema from "../../models/schema";
+import { mockClient } from "../mock";
 
 const db = drizzle(mockClient, { schema });
 
@@ -15,17 +15,13 @@ const __dirname = dirname(__filename);
 const seedDatabase = async () => {
 	try {
 		await mockClient.connect();
-		const [
-			userData,
-			spacesData,
-			friendsData,
-			spaceMembersData,
-		] = await Promise.all([
-			readCSV("users.csv"),
-			readCSV("spaces.csv"),
-			readCSV("friends.csv"),
-			readCSV("space_members.csv"),
-		]);
+		const [userData, spacesData, friendsData, spaceMembersData] =
+			await Promise.all([
+				readCSV("users.csv"),
+				readCSV("spaces.csv"),
+				readCSV("friends.csv"),
+				readCSV("space_members.csv"),
+			]);
 
 		await db.transaction(async (tx) => {
 			try {
