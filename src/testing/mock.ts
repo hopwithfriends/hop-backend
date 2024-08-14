@@ -1,32 +1,27 @@
-import * as dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
 import * as schema from "../models/schema";
+import { seedDatabase } from "./seed/seed";
+import { client } from "../models";
 
-//mock client
-dotenv.config();
 
-console.log("Database URL:", process.env.DATABASE_TEST_URL);
-const mockClient = new pg.Client({
-	connectionString: process.env.DATABASE_TEST_URL,
-});
-
-export { mockClient };
-
-//clear DB
-async function deleteAllData(connectionString: string) {
-	const db = drizzle(mockClient, { schema });
-
-	try {
-		await db.transaction(async (tx) => {
-			for (const table of Object.values(schema)) {
-				if (typeof table === "object" && "name" in table) {
-					await tx.delete(table);
-				}
-			}
-		});
-		console.log("All data deleted successfully.");
+// remakeDB
+export const remakeDB = async () => {
+	try{
+	client.connect()
+	const db = drizzle(client, { schema });
+	await db.delete(schema.users).execute()
+	await db.delete(schema.spaces).execute()
+	await seedDatabase(db);
 	} catch (error) {
-		console.error("Error deleting data:", error);
+		console.log(error)
 	}
+};
+
+// mockData
+
+export const user = {
+	id: "1c9e7422-9fd5-4774-8f5e-78eb43412345",
+	username: "Emma",
+	profile_picture: "http://example.com/emma.jpg",
+	created_at:"2024-08-11 11:30:00"
 }

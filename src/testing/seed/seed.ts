@@ -1,20 +1,13 @@
 import fs from "node:fs";
-import path, { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse";
-import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "../../models/schema";
-import { mockClient } from "../mock";
 
-const db = drizzle(mockClient, { schema });
-
-// ! import.meta should not be used with commonjs
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const seedDatabase = async () => {
+export const seedDatabase = async (
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	db: { transaction: (arg0: (tx: any) => Promise<void>) => any } | undefined,
+) => {
 	try {
-		await mockClient.connect();
+		if (!db) throw new Error("No Database found");
 		const [userData, spacesData, friendsData, spaceMembersData] =
 			await Promise.all([
 				readCSV("users.csv"),
@@ -37,7 +30,6 @@ const seedDatabase = async () => {
 				throw new Error(errorMessage);
 			}
 		});
-		console.log("Successfully seeded database!");
 		return;
 	} catch (error) {
 		console.error(error);
@@ -47,16 +39,11 @@ const seedDatabase = async () => {
 	}
 };
 
-seedDatabase();
-
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const readCSV = async (filename: string): Promise<any[]> => {
-	// const filePath = path.join(__dirname, "seed_files", filename);
-	const filePath = join(__dirname, "/seed_data", filename);
-
+	const filePath = `src/testing/seed/seed_data/${filename}`
 	try {
 		const fileContent = await fs.promises.readFile(filePath, "utf-8");
-
 		return new Promise((resolve, reject) => {
 			parse(
 				fileContent,
@@ -84,3 +71,5 @@ const readCSV = async (filename: string): Promise<any[]> => {
 		throw error;
 	}
 };
+
+

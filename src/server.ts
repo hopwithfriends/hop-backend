@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { drizzle } from "drizzle-orm/node-postgres";
 import app from "./app";
 import { client } from "./models";
@@ -20,14 +19,14 @@ async function startServer() {
 	try {
 		await client.connect();
 		console.log(
-			new Date().toLocaleString() + chalk.yellow(" Connected to Database"),
+			`${new Date().toLocaleString()} + Connected to Database`,
 		);
 
 		app.listen(PORT, () => {
-			console.log(chalk.green(`Server listening on port ${PORT}`));
+			console.log(`Server listening on port ${PORT}`);
 		});
 	} catch (error) {
-		console.log(chalk.red("Failed to connect to the database!"), error);
+		console.log("Failed to connect to the database!", error);
 		process.exit(1);
 	}
 }
