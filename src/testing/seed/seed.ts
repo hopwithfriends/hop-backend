@@ -3,10 +3,10 @@ import path, { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { client } from "..";
-import * as schema from "../schema";
+import { mockClient } from "../mock";
+import * as schema from "../../models/schema";
 
-const db = drizzle(client, { schema });
+const db = drizzle(mockClient, { schema });
 
 // ! import.meta should not be used with commonjs
 const __filename = fileURLToPath(import.meta.url);
@@ -14,16 +14,14 @@ const __dirname = dirname(__filename);
 
 const seedDatabase = async () => {
 	try {
-		await client.connect();
+		await mockClient.connect();
 		const [
 			userData,
-			userCredentialsData,
 			spacesData,
 			friendsData,
 			spaceMembersData,
 		] = await Promise.all([
 			readCSV("users.csv"),
-			readCSV("user_credentials.csv"),
 			readCSV("spaces.csv"),
 			readCSV("friends.csv"),
 			readCSV("space_members.csv"),
@@ -32,7 +30,6 @@ const seedDatabase = async () => {
 		await db.transaction(async (tx) => {
 			try {
 				await tx.insert(schema.users).values(userData);
-				await tx.insert(schema.usersCredentials).values(userCredentialsData);
 				await tx.insert(schema.spaces).values(spacesData);
 				await tx.insert(schema.friends).values(friendsData);
 				await tx.insert(schema.spaceMembers).values(spaceMembersData);
