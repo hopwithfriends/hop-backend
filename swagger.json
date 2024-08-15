@@ -77,13 +77,13 @@
 				}
 			}
 		},
-		"/api/user/friend/{friendId}": {
+		"/api/user/friend/{username}": {
 			"post": {
 				"summary": "🔒 Add a friend",
 				"tags": ["User"],
 				"parameters": [
 					{
-						"name": "friendId",
+						"name": "username",
 						"in": "path",
 						"required": true,
 						"schema": {
@@ -102,7 +102,9 @@
 						"description": "Error adding friend"
 					}
 				}
-			},
+			}
+		},
+		"/api/user/friend/{friendId}": {
 			"delete": {
 				"summary": "🔒 Delete a friend",
 				"tags": ["User"],
@@ -128,7 +130,8 @@
 					}
 				}
 			}
-		},
+		
+	},
 		"/api/user/friend": {
 			"get": {
 				"summary": "🔒 Get all friends of the current user",
