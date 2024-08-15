@@ -46,7 +46,7 @@ export class UserMethods {
 		}
 	}
 
-	async insertFriend(username: string, userId: string): Promise<boolean> {
+	async insertFriend(userId: string, username: string): Promise<boolean> {
 		try {
 			const user = await db
 				.select()
@@ -85,7 +85,6 @@ export class UserMethods {
 				console.log("Users are already friends");
 				return false;
 			}
-
 			await db.transaction(async (tx) => {
 				try {
 					await tx

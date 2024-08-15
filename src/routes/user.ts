@@ -7,7 +7,7 @@ userRouter.get("/", userController.getOneUser);
 userRouter.put("/", userController.putUser);
 
 // Friend
-userRouter.post("/friend/:friendId", userController.postFriendController);
+userRouter.post("/friend/:username", userController.postFriendController);
 userRouter.delete("/friend/:friendId", userController.deleteFriendController);
 userRouter.get("/friend", userController.getAllFriends);
 
