@@ -21,10 +21,8 @@ export class SpaceMethods {
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
 		try {
-			const appName = `${name.replace(/ /g, "")}-${id}`;
+			const appName = `${name.toLowerCase().replace(/ /g, "")}-${id}`;
 			// SDK
-			console.log(appName);
-			console.log(password);
 			try {
 				const response = await fetch(FLY_API_URL, {
 					method: "POST",
@@ -46,7 +44,6 @@ export class SpaceMethods {
 
 			// IF SDK CONFIRMED
 			const flyUrl = `https://${appName}.fly.dev`;
-
 			return await db.transaction(async (tx) => {
 				const space: SpaceType = {
 					id,

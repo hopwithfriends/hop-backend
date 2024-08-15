@@ -46,21 +46,21 @@ export class UserMethods {
 		}
 	}
 
-	async insertFriend(userId: string, friendId: string): Promise<boolean> {
+	async insertFriend(username: string, userId: string): Promise<boolean> {
 		try {
-			const userExists = await db
+			const user = await db
 				.select()
 				.from(users)
 				.where(eq(users.id, userId))
 				.limit(1);
 
-			const friendExists = await db
+			const friend = await db
 				.select()
 				.from(users)
-				.where(eq(users.id, friendId))
+				.where(eq(users.username, username))
 				.limit(1);
 
-			if (!userExists || !friendExists) {
+			if (!user || !friend) {
 				console.log("Users don't exist");
 				return false;
 			}
@@ -70,8 +70,14 @@ export class UserMethods {
 				.from(friends)
 				.where(
 					or(
-						and(eq(friends.userId, userId), eq(friends.friendId, friendId)),
-						and(eq(friends.userId, friendId), eq(friends.friendId, userId)),
+						and(
+							eq(friends.userId, user[0].id),
+							eq(friends.friendId, friend[0].id),
+						),
+						and(
+							eq(friends.userId, friend[0].id),
+							eq(friends.friendId, user[0].id),
+						),
 					),
 				);
 
@@ -82,10 +88,12 @@ export class UserMethods {
 
 			await db.transaction(async (tx) => {
 				try {
-					await tx.insert(friends).values({ userId, friendId });
 					await tx
 						.insert(friends)
-						.values({ userId: friendId, friendId: userId });
+						.values({ userId: user[0].id, friendId: friend[0].id });
+					await tx
+						.insert(friends)
+						.values({ userId: friend[0].id, friendId: user[0].id });
 				} catch (error) {
 					await tx.rollback();
 					throw error;
