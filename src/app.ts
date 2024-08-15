@@ -12,7 +12,7 @@ import userRouter from "./routes/user";
 const app = express();
 
 const limiter = rateLimit({
-	windowMs: 1000, // 15 minutes
+	windowMs: 1000, // 1 second
 	limit: 20,
 	standardHeaders: "draft-7",
 	legacyHeaders: false,
