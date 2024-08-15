@@ -41,14 +41,14 @@ class UserController {
 	async postFriendController(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;
-			const { friendId } = req.params;
+			const { username } = req.params;
 
-			if (!userId || !friendId) {
-				res.status(400).send("Missing userId or friendId");
+			if (!userId || !username) {
+				res.status(400).send("Missing userId or username");
 				return;
 			}
 
-			const success = await userMethods.insertFriend(userId, friendId);
+			const success = await userMethods.insertFriend(userId, username);
 
 			if (success) {
 				res.status(201).send("Friend added successfully");
@@ -65,14 +65,14 @@ class UserController {
 	async deleteFriendController(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;
-			const { username } = req.params;
+			const { friendId } = req.params;
 
-			if (!userId || !username) {
-				res.status(400).send("Missing userId or username");
+			if (!userId || !friendId) {
+				res.status(400).send("Missing userId or friendId");
 				return;
 			}
 
-			const success = await userMethods.deleteFriend(userId, username);
+			const success = await userMethods.deleteFriend(userId, friendId);
 
 			if (success) {
 				res.status(202).send("Friend deleted successfully");
