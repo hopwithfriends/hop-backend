@@ -70,8 +70,14 @@ export class UserMethods {
 				.from(friends)
 				.where(
 					or(
-						and(eq(friends.userId, user[0].id), eq(friends.friendId, friend[0].id)),
-						and(eq(friends.userId, friend[0].id), eq(friends.friendId, user[0].id)),
+						and(
+							eq(friends.userId, user[0].id),
+							eq(friends.friendId, friend[0].id),
+						),
+						and(
+							eq(friends.userId, friend[0].id),
+							eq(friends.friendId, user[0].id),
+						),
 					),
 				);
 
@@ -82,7 +88,9 @@ export class UserMethods {
 
 			await db.transaction(async (tx) => {
 				try {
-					await tx.insert(friends).values({ userId: user[0].id, friendId: friend[0].id });
+					await tx
+						.insert(friends)
+						.values({ userId: user[0].id, friendId: friend[0].id });
 					await tx
 						.insert(friends)
 						.values({ userId: friend[0].id, friendId: user[0].id });

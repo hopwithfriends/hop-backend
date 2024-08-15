@@ -130,8 +130,7 @@
 					}
 				}
 			}
-		
-	},
+		},
 		"/api/user/friend": {
 			"get": {
 				"summary": "🔒 Get all friends of the current user",

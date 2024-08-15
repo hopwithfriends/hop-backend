@@ -44,7 +44,6 @@ export class SpaceMethods {
 
 			// IF SDK CONFIRMED
 			const flyUrl = `https://${appName}.fly.dev`;
-
 			return await db.transaction(async (tx) => {
 				const space: SpaceType = {
 					id,

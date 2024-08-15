@@ -72,7 +72,7 @@ class UserController {
 				return;
 			}
 
-			const success = await userMethods.deleteFriend(userId,username);
+			const success = await userMethods.deleteFriend(userId, username);
 
 			if (success) {
 				res.status(202).send("Friend deleted successfully");
