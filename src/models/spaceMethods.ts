@@ -21,7 +21,7 @@ export class SpaceMethods {
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
 		try {
-			const appName = `${name.toLowerCase().replace(/ /g, "")}-${id}`;
+			const appName = `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-${id}`;
 			// SDK
 			try {
 				const response = await fetch(FLY_API_URL, {
