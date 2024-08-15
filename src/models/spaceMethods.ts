@@ -14,14 +14,17 @@ import { spaceMembers, spaces } from "./schema";
 
 export class SpaceMethods {
 	async insertSpace(
+		id: string,
 		name: string,
 		userId: string,
+		password: string,
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
 		try {
-			const appName = `${name.replace(/ /g, "")}-${uuidv4()}`;
-
+			const appName = `${name.replace(/ /g, "")}-${id}`;
 			// SDK
+			console.log(appName);
+			console.log(password);
 			try {
 				const response = await fetch(FLY_API_URL, {
 					method: "POST",
@@ -30,6 +33,7 @@ export class SpaceMethods {
 					},
 					body: JSON.stringify({
 						app_name: appName,
+						password: password,
 					}),
 				});
 
@@ -45,7 +49,9 @@ export class SpaceMethods {
 
 			return await db.transaction(async (tx) => {
 				const space: SpaceType = {
+					id,
 					name,
+					password,
 					flyUrl,
 					theme,
 				};
@@ -152,7 +158,9 @@ export class SpaceMethods {
 		}
 	}
 
-	async findOwnedSpaces(userId: string): Promise<SpaceType[]> {
+	async findOwnedSpaces(
+		userId: string,
+	): Promise<Omit<SpaceType, "password">[]> {
 		try {
 			const adminSpaces = await db
 				.select({
@@ -174,7 +182,9 @@ export class SpaceMethods {
 		}
 	}
 
-	async findInvitedSpaces(userId: string): Promise<SpaceType[]> {
+	async findInvitedSpaces(
+		userId: string,
+	): Promise<Omit<SpaceType, "password">[]> {
 		try {
 			const memberSpaces = await db
 				.select({
@@ -196,6 +206,27 @@ export class SpaceMethods {
 		} catch (error) {
 			console.error("Error fetching non-admin member spaces:", error);
 			return [];
+		}
+	}
+
+	async findSpace(id: string): Promise<Omit<SpaceType, "password"> | null> {
+		try {
+			const space = await db
+				.select({
+					id: spaces.id,
+					name: spaces.name,
+					flyUrl: spaces.flyUrl,
+					theme: spaces.theme,
+				})
+				.from(spaces)
+				.where(eq(spaces.id, id));
+
+			if (!space[0]) return null;
+
+			return space[0];
+		} catch (error) {
+			console.log("Body does not have the correct information!");
+			return null;
 		}
 	}
 }

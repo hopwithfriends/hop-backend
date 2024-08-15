@@ -4,6 +4,7 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import { authMiddleware } from "./authMiddleware";
+import spaceController from "./controllers/spaceController";
 import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
@@ -23,12 +24,15 @@ app.use((req, res, next) => {
 	next();
 });
 
+// No Auth Required
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(authMiddleware);
+app.use("/api/spaceId/:id", spaceController.getSpaceById);
 app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
 
+// Auth Protected
+app.use(authMiddleware);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/space", spaceRouter);

@@ -16,10 +16,11 @@ export const UserSchema = z.object({
 });
 
 export const SpaceSchema = z.object({
-	id: z.string().uuid().optional(),
+	id: z.string().uuid(),
 	name: z.string().min(1),
 	flyUrl: z.string(),
 	theme: z.enum(ThemeEnum),
+	password: z.string(), // ! add some more verification later
 });
 
 export const FriendSchema = z.object({
