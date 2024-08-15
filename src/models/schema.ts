@@ -24,7 +24,7 @@ export const users = pgTable("users", {
 export const spaces = pgTable("spaces", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	name: text("name").notNull(),
-	password: text("passowrd").notNull(),
+	password: text("password").notNull(),
 	flyUrl: text("fly_url").notNull().unique(),
 	theme: themeEnum("theme").notNull(),
 });

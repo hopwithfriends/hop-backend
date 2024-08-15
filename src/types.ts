@@ -10,9 +10,9 @@ export const ThemeSchema = z.enum(ThemeEnum);
 // Zod Schemas
 export const UserSchema = z.object({
 	id: z.string().uuid(),
-	username: z.string().min(1).nullable(),
-	nickname: z.string().nullable(),
-	profilePicture: z.string().nullable(),
+	username: z.string().min(1).optional().nullable(),
+	nickname: z.string().optional().nullable(),
+	profilePicture: z.string().optional().nullable(),
 });
 
 export const SpaceSchema = z.object({

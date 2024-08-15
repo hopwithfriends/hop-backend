@@ -8,7 +8,7 @@
 	"paths": {
 		"/api": {
 			"get": {
-				"summary": "Welcome message",
+				"summary": "🔓 Welcome message",
 				"tags": ["Info"],
 				"responses": {
 					"200": {
@@ -26,7 +26,7 @@
 		},
 		"/api/user": {
 			"get": {
-				"summary": "Get current user",
+				"summary": "🔒 Get current user",
 				"tags": ["User"],
 				"responses": {
 					"200": {
@@ -48,7 +48,7 @@
 				}
 			},
 			"put": {
-				"summary": "Update user",
+				"summary": "🔒 Update user",
 				"tags": ["User"],
 				"requestBody": {
 					"required": true,
@@ -79,7 +79,7 @@
 		},
 		"/api/user/friend/{friendId}": {
 			"post": {
-				"summary": "Add a friend",
+				"summary": "🔒 Add a friend",
 				"tags": ["User"],
 				"parameters": [
 					{
@@ -104,7 +104,7 @@
 				}
 			},
 			"delete": {
-				"summary": "Delete a friend",
+				"summary": "🔒 Delete a friend",
 				"tags": ["User"],
 				"parameters": [
 					{
@@ -131,7 +131,7 @@
 		},
 		"/api/user/friend": {
 			"get": {
-				"summary": "Get all friends of the current user",
+				"summary": "🔒 Get all friends of the current user",
 				"tags": ["User"],
 				"responses": {
 					"200": {
@@ -153,16 +153,52 @@
 				}
 			}
 		},
+		"/api/spaceId/{id}": {
+			"get": {
+				"tags": ["Space"],
+				"x-auth-type": "None",
+				"summary": "🔓 Get space by ID",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "Space found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Space"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Space not found"
+					},
+					"500": {
+						"description": "Server failed to fetch space"
+					}
+				}
+			}
+		},
 		"/api/space": {
 			"post": {
-				"summary": "Create a new space",
+				"summary": "🔒 Create a new space",
 				"tags": ["Space"],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/NewSpace"
+								"$ref": "#/components/schemas/Space"
 							}
 						}
 					}
@@ -189,7 +225,7 @@
 		},
 		"/api/space/{id}": {
 			"delete": {
-				"summary": "Delete a space",
+				"summary": "🔒 Delete a space",
 				"tags": ["Space"],
 				"parameters": [
 					{
@@ -197,7 +233,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"format": "uuid"
 						}
 					}
 				],
@@ -216,7 +253,7 @@
 		},
 		"/api/space/addUser": {
 			"post": {
-				"summary": "Add a user to a space",
+				"summary": "🔒 Add a user to a space",
 				"tags": ["Space"],
 				"requestBody": {
 					"required": true,
@@ -243,7 +280,7 @@
 		},
 		"/api/space/myspaces": {
 			"get": {
-				"summary": "Get spaces where user is admin",
+				"summary": "🔒 Get spaces where user is admin",
 				"tags": ["Space"],
 				"responses": {
 					"200": {
@@ -267,7 +304,7 @@
 		},
 		"/api/space/invitedspaces": {
 			"get": {
-				"summary": "Get spaces where user is invited",
+				"summary": "🔒 Get spaces where user is invited",
 				"tags": ["Space"],
 				"responses": {
 					"200": {
@@ -331,7 +368,14 @@
 			"NewSpace": {
 				"type": "object",
 				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
 					"name": {
+						"type": "string"
+					},
+					"password": {
 						"type": "string"
 					},
 					"theme": {
