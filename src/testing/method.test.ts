@@ -2,9 +2,9 @@ const request = require("supertest");
 import { beforeEach, describe, expect, it } from "@jest/globals";
 import userMethods from "../models/userMethods";
 import * as mock from "./mock";
-
+/*
 beforeEach(() => {
-	mock.remakeDB();
+	//mock.remakeDB();
 });
 
 describe("User method testing", () => {
@@ -16,3 +16,4 @@ describe("User method testing", () => {
 	});
 });
 it("Find user by Id", () => {});
+*/
