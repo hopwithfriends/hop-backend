@@ -20,13 +20,11 @@ export class SpaceMethods {
 		password: string,
 		theme: ThemesEnumType = "default",
 	): Promise<SpaceType | null> {
-
-
 		try {
 			const appName = `${name.replace(/ /g, "")}-${id}`;
 			// SDK
-			console.log(appName)
-			console.log(password)
+			console.log(appName);
+			console.log(password);
 			try {
 				const response = await fetch(FLY_API_URL, {
 					method: "POST",
@@ -160,7 +158,9 @@ export class SpaceMethods {
 		}
 	}
 
-	async findOwnedSpaces(userId: string): Promise<Omit<SpaceType, 'password'>[]> {
+	async findOwnedSpaces(
+		userId: string,
+	): Promise<Omit<SpaceType, "password">[]> {
 		try {
 			const adminSpaces = await db
 				.select({
@@ -182,7 +182,9 @@ export class SpaceMethods {
 		}
 	}
 
-	async findInvitedSpaces(userId: string): Promise<Omit<SpaceType, 'password'>[]> {
+	async findInvitedSpaces(
+		userId: string,
+	): Promise<Omit<SpaceType, "password">[]> {
 		try {
 			const memberSpaces = await db
 				.select({
@@ -207,7 +209,7 @@ export class SpaceMethods {
 		}
 	}
 
-	async findSpace(id: string): Promise<Omit<SpaceType, 'password'> | null> {
+	async findSpace(id: string): Promise<Omit<SpaceType, "password"> | null> {
 		try {
 			const space = await db
 				.select({

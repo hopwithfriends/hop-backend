@@ -20,7 +20,7 @@ export const SpaceSchema = z.object({
 	name: z.string().min(1),
 	flyUrl: z.string(),
 	theme: z.enum(ThemeEnum),
-	password: z.string() // ! add some more verification later
+	password: z.string(), // ! add some more verification later
 });
 
 export const FriendSchema = z.object({

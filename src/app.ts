@@ -4,10 +4,10 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import { authMiddleware } from "./authMiddleware";
+import spaceController from "./controllers/spaceController";
 import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
-import spaceController from "./controllers/spaceController";
 const app = express();
 
 app.use(cors());
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 // No Auth Required
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/spaceId/:id",spaceController.getSpaceById)
+app.use("/api/spaceId/:id", spaceController.getSpaceById);
 app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
