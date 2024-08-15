@@ -4,6 +4,7 @@ import * as schema from "../models/schema";
 import { seedDatabase } from "./seed/seed";
 
 // remakeDB
+/*
 export const remakeDB = async () => {
 	try {
 		client.connect();
@@ -24,3 +25,4 @@ export const user = {
 	profile_picture: "http://example.com/emma.jpg",
 	created_at: "2024-08-11 11:30:00",
 };
+*/

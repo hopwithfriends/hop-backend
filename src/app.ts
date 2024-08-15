@@ -1,6 +1,7 @@
 // import Sentry from "@sentry/node";
 import cors from "cors";
 import express from "express";
+import { rateLimit } from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import { authMiddleware } from "./authMiddleware";
@@ -10,7 +11,15 @@ import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
 const app = express();
 
+const limiter = rateLimit({
+	windowMs: 1000, // 1 second
+	limit: 20,
+	standardHeaders: "draft-7",
+	legacyHeaders: false,
+});
+
 app.use(cors());
+app.use(limiter);
 app.use(express.json());
 
 app.use((req, res, next) => {
