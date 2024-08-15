@@ -5,8 +5,14 @@ class SpaceController {
 	async postSpace(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;
-			const { name, theme } = req.body;
-			const newSpace = await spaceMethods.insertSpace(name, userId, theme);
+			const { id, name, password, theme } = req.body;
+			const newSpace = await spaceMethods.insertSpace(
+				id,
+				name,
+				userId,
+				password,
+				theme,
+			);
 			if (newSpace) {
 				res.status(201).send(newSpace);
 			} else {
@@ -21,7 +27,6 @@ class SpaceController {
 		try {
 			const { id } = req.params;
 			const deletedSpace = await spaceMethods.deleteSpace(id);
-
 			if (deletedSpace) {
 				res.status(202).send("Space deleted!");
 			} else {
@@ -69,6 +74,20 @@ class SpaceController {
 			res.status(200).send(memberSpaces);
 		} catch (error) {
 			res.status(500).send("Could not fetch your invited spaces!");
+		}
+	}
+
+	async getSpaceById(req: Request, res: Response): Promise<void> {
+		try {
+			const { id } = req.params;
+			const spaceFound = await spaceMethods.findSpace(id);
+			if (spaceFound) {
+				res.status(200).send(spaceFound);
+			} else {
+				res.status(400).send("Space not found!");
+			}
+		} catch (error) {
+			res.status(500).send("Server failed to fetch space!");
 		}
 	}
 }
