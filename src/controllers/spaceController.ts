@@ -79,8 +79,10 @@ class SpaceController {
 
 	async getSpaceById(req: Request, res: Response): Promise<void> {
 		try {
+			let userId = req.user;
+			if (!userId) userId = "";
 			const { id } = req.params;
-			const spaceFound = await spaceMethods.findSpace(id);
+			const spaceFound = await spaceMethods.findSpace(id, userId);
 			if (spaceFound) {
 				res.status(200).send(spaceFound);
 			} else {

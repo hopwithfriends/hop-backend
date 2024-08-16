@@ -165,6 +165,7 @@ export class SpaceMethods {
 					name: spaces.name,
 					flyUrl: spaces.flyUrl,
 					theme: spaces.theme,
+					password: spaces.password,
 				})
 				.from(spaceMembers)
 				.innerJoin(spaces, eq(spaceMembers.spaceId, spaces.id))
@@ -189,6 +190,7 @@ export class SpaceMethods {
 					name: spaces.name,
 					flyUrl: spaces.flyUrl,
 					theme: spaces.theme,
+					password: spaces.password,
 				})
 				.from(spaceMembers)
 				.innerJoin(spaces, eq(spaceMembers.spaceId, spaces.id))
@@ -206,7 +208,10 @@ export class SpaceMethods {
 		}
 	}
 
-	async findSpace(id: string): Promise<Omit<SpaceType, "password"> | null> {
+	async findSpace(
+		id: string,
+		userId: string,
+	): Promise<Omit<SpaceType, "password"> | null> {
 		try {
 			const space = await db
 				.select({
@@ -214,11 +219,15 @@ export class SpaceMethods {
 					name: spaces.name,
 					flyUrl: spaces.flyUrl,
 					theme: spaces.theme,
+					password: spaces.password,
 				})
 				.from(spaces)
 				.where(eq(spaces.id, id));
-
 			if (!space[0]) return null;
+			if (!userId) {
+				const { password, ...spaceWithoutPassword } = space[0];
+				return spaceWithoutPassword;
+			}
 
 			return space[0];
 		} catch (error) {
