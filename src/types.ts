@@ -71,3 +71,7 @@ export type ThemesEnumType = z.infer<typeof ThemeSchema>;
 
 export type StackWebhookDataType = z.infer<typeof StackWebhookDataSchema>;
 export type StackWebhookType = z.infer<typeof StackWebhookSchema>;
+
+export type CloudinaryUploadResult = {
+	secure_url: string;
+};
