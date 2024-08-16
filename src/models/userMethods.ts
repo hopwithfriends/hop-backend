@@ -32,7 +32,7 @@ export class UserMethods {
 				.where(eq(users.id, userId))
 				.returning();
 
-			const validatedUpdatedUser = UserSchema.parse(updatedUser);
+			const validatedUpdatedUser = UserSchema.parse(updatedUser[0]);
 
 			if (!validatedUpdatedUser) return null;
 			return validatedUpdatedUser;

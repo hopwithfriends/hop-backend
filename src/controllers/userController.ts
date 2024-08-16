@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
+import cloudinary from "../cloudinary";
 import userMethods from "../models/userMethods";
+import type { CloudinaryUploadResult } from "../types";
 
 class UserController {
 	async getOneUser(req: Request, res: Response): Promise<void> {
@@ -19,7 +21,30 @@ class UserController {
 	async putUser(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;
-			const { username, profilePicture, nickname } = req.body;
+			const { username, nickname } = req.body;
+			let profilePicture = req.body.profilePicture;
+
+			if (req.file) {
+				try {
+					const uploadPromise = () =>
+						new Promise<CloudinaryUploadResult>((resolve, reject) => {
+							cloudinary.uploader
+								.upload_stream({ resource_type: "auto" }, (error, result) => {
+									if (error) {
+										return reject(
+											new Error(`Cloudinary upload failed: ${error.message}`),
+										);
+									}
+									resolve(result as CloudinaryUploadResult);
+								})
+								.end(req.file ? req.file.buffer : null);
+						});
+					const result = await uploadPromise();
+					profilePicture = result.secure_url;
+				} catch (error) {
+					throw new Error("Failed to upload profile picture");
+				}
+			}
 
 			const userData = {
 				username,
