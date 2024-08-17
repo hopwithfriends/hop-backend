@@ -48,12 +48,12 @@ class SpaceController {
 			);
 
 			if (addedMember) {
-				res.status(201).send("Removed user!");
+				res.status(201).send("Added user!");
 			} else {
-				res.status(400).send("Could not remove user from space!");
+				res.status(400).send("Could not add user to space!");
 			}
 		} catch (error) {
-			res.status(500).send("Could not remove user from space!");
+			res.status(500).send("Server Issues!");
 		}
 	}
 
@@ -67,12 +67,12 @@ class SpaceController {
 				userId,
 			);
 			if (removedMember) {
-				res.status(201).send(removedMember);
+				res.status(201).send("Removed user!");
 			} else {
-				res.status(400).send("Could not add user to space!");
+				res.status(400).send("Could not remove user from space!");
 			}
 		} catch (error) {
-			res.status(500).send("Could not add user to space!");
+			res.status(500).send("Server Issues!");
 		}
 	}
 

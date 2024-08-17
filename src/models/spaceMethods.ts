@@ -155,17 +155,18 @@ export class SpaceMethods {
 
 			const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
 
-			const spaceExists = await db
+			const memberExists = await db
 				.select()
 				.from(spaceMembers)
 				.where(
 					and(
-						eq(spaceMembers.id, validatedSpaceMember.spaceId),
+						eq(spaceMembers.spaceId, validatedSpaceMember.spaceId),
 						eq(spaceMembers.userId, validatedSpaceMember.userId),
 					),
 				);
 
-			if (spaceExists) return false;
+			console.log("memberExists", memberExists);
+			if (memberExists[0]) return false;
 
 			await db.insert(spaceMembers).values(validatedSpaceMember);
 
@@ -204,7 +205,7 @@ export class SpaceMethods {
 			roleHierarchy[adminRole] > roleHierarchy[userRole] &&
 			userRole !== "owner";
 
-		if (canRemove) {
+		if (canRemove || userId === adminId) {
 			await db
 				.delete(spaceMembers)
 				.where(
