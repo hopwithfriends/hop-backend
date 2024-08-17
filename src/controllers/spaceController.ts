@@ -25,8 +25,9 @@ class SpaceController {
 
 	async deleteSpace(req: Request, res: Response): Promise<void> {
 		try {
+			const userId = req.user;
 			const { id } = req.params;
-			const deletedSpace = await spaceMethods.deleteSpace(id);
+			const deletedSpace = await spaceMethods.deleteSpace(id, userId);
 			if (deletedSpace) {
 				res.status(202).send("Space deleted!");
 			} else {
@@ -47,7 +48,26 @@ class SpaceController {
 			);
 
 			if (addedMember) {
-				res.status(201).send(addedMember);
+				res.status(201).send("Removed user!");
+			} else {
+				res.status(400).send("Could not remove user from space!");
+			}
+		} catch (error) {
+			res.status(500).send("Could not remove user from space!");
+		}
+	}
+
+	async deleteUserFromSpace(req: Request, res: Response): Promise<void> {
+		try {
+			const { id } = req.params;
+			const { spaceId, userId } = req.params;
+			const removedMember = await spaceMethods.removeUserFromSpace(
+				spaceId,
+				id,
+				userId,
+			);
+			if (removedMember) {
+				res.status(201).send(removedMember);
 			} else {
 				res.status(400).send("Could not add user to space!");
 			}
@@ -78,10 +98,8 @@ class SpaceController {
 
 	async getSpaceById(req: Request, res: Response): Promise<void> {
 		try {
-			let userId = req.user;
-			if (!userId) userId = "";
 			const { id } = req.params;
-			const spaceFound = await spaceMethods.findSpace(id, userId);
+			const spaceFound = await spaceMethods.findSpace(id);
 			if (spaceFound) {
 				res.status(200).send(spaceFound);
 			} else {

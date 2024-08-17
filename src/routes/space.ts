@@ -7,9 +7,10 @@ export const spaceRouter = express.Router();
 spaceRouter.post("/", spaceController.postSpace);
 spaceRouter.delete("/:id", spaceController.deleteSpace);
 spaceRouter.post("/addUser", spaceController.postUserToSpace);
+spaceRouter.delete("/kick/:spaceId/:userId");
 
 // SpacesAllowed
-spaceRouter.get("/myspaces", spaceController.getAdminSpaces);
-spaceRouter.get("/invitedspaces", spaceController.getInvitedSpaces);
+spaceRouter.get("/mySpaces", spaceController.getAdminSpaces);
+spaceRouter.get("/invitedSpaces", spaceController.getInvitedSpaces);
 
 export default spaceRouter;
