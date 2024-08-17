@@ -72,6 +72,14 @@ export type ThemesEnumType = z.infer<typeof ThemeSchema>;
 export type StackWebhookDataType = z.infer<typeof StackWebhookDataSchema>;
 export type StackWebhookType = z.infer<typeof StackWebhookSchema>;
 
+export type FriendStatusType = {
+	id: string;
+	username: string | null;
+	nickname: string | null;
+	profilePicture: string | null;
+	status: string | null | { name: string; id: string };
+};
+
 export type CloudinaryUploadResult = {
 	secure_url: string;
 };

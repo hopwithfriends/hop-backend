@@ -85,7 +85,7 @@ export class SpaceMethods {
 		}
 	}
 
-	async deleteSpace(spaceId: string): Promise<boolean> {
+	async deleteSpace(spaceId: string, userId: string): Promise<boolean> {
 		try {
 			const spaceToDelete = await db
 				.select()
@@ -93,6 +93,19 @@ export class SpaceMethods {
 				.where(eq(spaces.id, spaceId));
 
 			if (!spaceToDelete) return false;
+
+			const spaceOwner = await db
+				.select()
+				.from(spaceMembers)
+				.where(
+					and(
+						eq(spaceMembers.role, "owner"),
+						eq(spaceMembers.id, spaceId),
+						eq(spaceMembers.userId, userId),
+					),
+				);
+
+			if (!spaceOwner[0]) return false;
 
 			const appName = (spaceToDelete[0].flyUrl.match(
 				/(?<=https:\/\/).*?(?=\.fly\.dev)/,
@@ -142,6 +155,18 @@ export class SpaceMethods {
 
 			const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
 
+			const spaceExists = await db
+				.select()
+				.from(spaceMembers)
+				.where(
+					and(
+						eq(spaceMembers.id, validatedSpaceMember.spaceId),
+						eq(spaceMembers.userId, validatedSpaceMember.userId),
+					),
+				);
+
+			if (spaceExists) return false;
+
 			await db.insert(spaceMembers).values(validatedSpaceMember);
 
 			return true;
@@ -152,6 +177,40 @@ export class SpaceMethods {
 				console.error("Error adding user to space:", error);
 			}
 			return false;
+		}
+	}
+
+	async removeUserFromSpace(spaceId: string, adminId: string, userId: string) {
+		const [adminRole, userRole] = await Promise.all([
+			db
+				.select({ role: spaceMembers.role })
+				.from(spaceMembers)
+				.where(
+					and(eq(spaceMembers.id, adminId), eq(spaceMembers.spaceId, spaceId)),
+				)
+				.then((result) => result[0]?.role),
+			db
+				.select({ role: spaceMembers.role })
+				.from(spaceMembers)
+				.where(
+					and(eq(spaceMembers.id, userId), eq(spaceMembers.spaceId, spaceId)),
+				)
+				.then((result) => result[0]?.role),
+		]);
+
+		const roleHierarchy = { owner: 3, editor: 2, member: 1, anonymous: 0 };
+
+		const canRemove =
+			roleHierarchy[adminRole] > roleHierarchy[userRole] &&
+			userRole !== "owner";
+
+		if (canRemove) {
+			await db
+				.delete(spaceMembers)
+				.where(
+					and(eq(spaceMembers.userId, userId), eq(spaceMembers.id, spaceId)),
+				);
+			return true;
 		}
 	}
 
@@ -208,10 +267,7 @@ export class SpaceMethods {
 		}
 	}
 
-	async findSpace(
-		id: string,
-		userId: string,
-	): Promise<Omit<SpaceType, "password"> | null> {
+	async findSpace(id: string): Promise<SpaceType | null> {
 		try {
 			const space = await db
 				.select({
@@ -223,12 +279,6 @@ export class SpaceMethods {
 				})
 				.from(spaces)
 				.where(eq(spaces.id, id));
-			if (!space[0]) return null;
-			if (!userId) {
-				const { password, ...spaceWithoutPassword } = space[0];
-				return spaceWithoutPassword;
-			}
-
 			return space[0];
 		} catch (error) {
 			console.log("Body does not have the correct information!");

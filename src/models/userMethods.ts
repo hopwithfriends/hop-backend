@@ -1,9 +1,9 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../server";
-import type { UserType } from "../types";
+import type { FriendStatusType, UserType } from "../types";
 import { UserSchema } from "../types";
-import { friends, users } from "./schema";
+import { friends, spaces, userStatus, users } from "./schema";
 
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
@@ -131,7 +131,7 @@ export class UserMethods {
 		}
 	}
 
-	async findAllFriends(userId: string): Promise<UserType[]> {
+	async findAllFriends(userId: string): Promise<FriendStatusType[]> {
 		try {
 			const friendIds = await db
 				.select({ friendId: friends.friendId })
@@ -140,10 +140,60 @@ export class UserMethods {
 				.then((rows) => rows.map((row) => row.friendId));
 
 			const friendsData = await db
-				.select()
+				.select({
+					id: users.id,
+					username: users.username,
+					nickname: users.nickname,
+					profilePicture: users.profilePicture,
+				})
 				.from(users)
 				.where(inArray(users.id, friendIds));
-			return friendsData.filter((friend) => friend.id !== userId);
+			const friendsFound = friendsData.filter((friend) => friend.id !== userId);
+
+			const friendStatusPromises: Promise<FriendStatusType>[] =
+				friendsFound.map(async (friend) => {
+					let status: string | null = null;
+					const friendOnline = await db
+						.select()
+						.from(userStatus)
+						.where(eq(userStatus.userId, friend.id));
+
+					if (friendOnline[0]) {
+						status = friendOnline[0].spaceId
+							? friendOnline[0].spaceId
+							: "online";
+					}
+					const friendWithStatus: FriendStatusType = {
+						id: friend.id,
+						username: friend.username,
+						nickname: friend.nickname,
+						profilePicture: friend.profilePicture,
+						status: status,
+					};
+					return friendWithStatus;
+				});
+
+			const friendStatus = await Promise.all(friendStatusPromises);
+
+			const friendSpacesPromises: Promise<FriendStatusType>[] =
+				friendStatus.map(async (friend) => {
+					if (friend.status === null || friend.status === "online")
+						return friend;
+					const friendSpace = await db
+						.select()
+						.from(spaces)
+						.where(eq(spaces.id, friend.status as string));
+
+					if (friendSpace[0]) {
+						friend.status = {
+							name: friendSpace[0].name,
+							id: friendSpace[0].id,
+						};
+					}
+					return friend;
+				});
+			const friendSpaces = await Promise.all(friendSpacesPromises);
+			return friendSpaces;
 		} catch (error) {
 			console.error("Error getting friends:", error);
 			return [];

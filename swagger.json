@@ -143,7 +143,7 @@
 								"schema": {
 									"type": "array",
 									"items": {
-										"$ref": "#/components/schemas/User"
+										"$ref": "#/components/schemas/UserComplete"
 									}
 								}
 							}
@@ -280,7 +280,44 @@
 				}
 			}
 		},
-		"/api/space/myspaces": {
+		"/api/space/{spaceId}/{userId}": {
+			"delete": {
+				"summary": "🔒 Remove a user from a space",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "spaceId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					},
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "User removed successfully"
+					},
+					"400": {
+						"description": "User could not be removed"
+					},
+					"500": {
+						"description": "Server error"
+					}
+				}
+			}
+		},
+		"/api/space/mySpaces": {
 			"get": {
 				"summary": "🔒 Get spaces where user is admin",
 				"tags": ["Space"],
@@ -304,7 +341,7 @@
 				}
 			}
 		},
-		"/api/space/invitedspaces": {
+		"/api/space/invitedSpaces": {
 			"get": {
 				"summary": "🔒 Get spaces where user is invited",
 				"tags": ["Space"],
@@ -350,6 +387,43 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					}
+				}
+			},
+			"UserComplete": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"username": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"profilePicture": {
+						"type": "string"
+					},
+					"status": {
+						"oneOf": [
+							{
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"spaceId": {
+										"type": "string",
+										"format": "uuid"
+									}
+								}
+							},
+							{
+								"type": "string"
+							}
+						]
 					}
 				}
 			},
