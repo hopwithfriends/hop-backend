@@ -100,7 +100,7 @@ export class SpaceMethods {
 				.where(
 					and(
 						eq(spaceMembers.role, "owner"),
-						eq(spaceMembers.id, spaceId),
+						eq(spaceMembers.spaceId, spaceId),
 						eq(spaceMembers.userId, userId),
 					),
 				);
