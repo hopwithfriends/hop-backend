@@ -411,6 +411,10 @@
 			"AddUserToSpace": {
 				"type": "object",
 				"properties": {
+					"friendId": {
+						"type": "string",
+						"format": "uuid"
+					},
 					"spaceId": {
 						"type": "string",
 						"format": "uuid"

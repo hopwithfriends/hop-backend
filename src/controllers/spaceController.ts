@@ -39,11 +39,10 @@ class SpaceController {
 
 	async postUserToSpace(req: Request, res: Response): Promise<void> {
 		try {
-			const userId = req.user;
-			const { spaceId, role } = req.body;
+			const { spaceId, friendId, role } = req.body;
 			const addedMember = await spaceMethods.addUserToSpace(
 				spaceId,
-				userId,
+				friendId,
 				role,
 			);
 
