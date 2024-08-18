@@ -1,16 +1,20 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../server";
-import type { UserType } from "../types";
+import type { FriendStatusType, UserType } from "../types";
 import { UserSchema } from "../types";
-import { friends, userStatus, users } from "./schema";
+import { friends, spaces, userStatus, users } from "./schema";
 
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
 		try {
-			const user = await db.select().from(users).where(eq(users.id, userId));
-			if (user.length > 0) {
-				return user[0];
+			const user = await db
+				.select()
+				.from(users)
+				.where(eq(users.id, userId))
+				.then((result) => result[0]);
+			if (user) {
+				return user;
 			}
 			return null;
 		} catch (error) {
@@ -30,9 +34,10 @@ export class UserMethods {
 				.update(users)
 				.set(validatedData)
 				.where(eq(users.id, userId))
-				.returning();
+				.returning()
+				.then((result) => result[0]);
 
-			const validatedUpdatedUser = UserSchema.parse(updatedUser[0]);
+			const validatedUpdatedUser = UserSchema.parse(updatedUser);
 
 			if (!validatedUpdatedUser) return null;
 			return validatedUpdatedUser;
@@ -52,13 +57,13 @@ export class UserMethods {
 				.select()
 				.from(users)
 				.where(eq(users.id, userId))
-				.limit(1);
+				.then((result) => result[0]);
 
 			const friend = await db
 				.select()
 				.from(users)
 				.where(eq(users.username, username))
-				.limit(1);
+				.then((result) => result[0]);
 
 			if (!user || !friend) {
 				console.log("Users don't exist");
@@ -70,14 +75,8 @@ export class UserMethods {
 				.from(friends)
 				.where(
 					or(
-						and(
-							eq(friends.userId, user[0].id),
-							eq(friends.friendId, friend[0].id),
-						),
-						and(
-							eq(friends.userId, friend[0].id),
-							eq(friends.friendId, user[0].id),
-						),
+						and(eq(friends.userId, user.id), eq(friends.friendId, friend.id)),
+						and(eq(friends.userId, friend.id), eq(friends.friendId, user.id)),
 					),
 				);
 
@@ -89,10 +88,10 @@ export class UserMethods {
 				try {
 					await tx
 						.insert(friends)
-						.values({ userId: user[0].id, friendId: friend[0].id });
+						.values({ userId: user.id, friendId: friend.id });
 					await tx
 						.insert(friends)
-						.values({ userId: friend[0].id, friendId: user[0].id });
+						.values({ userId: friend.id, friendId: user.id });
 				} catch (error) {
 					await tx.rollback();
 					throw error;
@@ -131,7 +130,7 @@ export class UserMethods {
 		}
 	}
 
-	async findAllFriends(userId: string): Promise<UserType[]> {
+	async findAllFriends(userId: string): Promise<FriendStatusType[]> {
 		try {
 			const friendIds = await db
 				.select({ friendId: friends.friendId })
@@ -140,10 +139,60 @@ export class UserMethods {
 				.then((rows) => rows.map((row) => row.friendId));
 
 			const friendsData = await db
-				.select()
+				.select({
+					id: users.id,
+					username: users.username,
+					nickname: users.nickname,
+					profilePicture: users.profilePicture,
+				})
 				.from(users)
 				.where(inArray(users.id, friendIds));
-			return friendsData.filter((friend) => friend.id !== userId);
+			const friendsFound = friendsData.filter((friend) => friend.id !== userId);
+
+			const friendStatusPromises: Promise<FriendStatusType>[] =
+				friendsFound.map(async (friend) => {
+					let status: string | null = null;
+					const friendOnline = await db
+						.select()
+						.from(userStatus)
+						.where(eq(userStatus.userId, friend.id))
+						.then((result) => result[0]);
+
+					if (friendOnline) {
+						status = friendOnline.spaceId ? friendOnline.spaceId : "online";
+					}
+					const friendWithStatus: FriendStatusType = {
+						id: friend.id,
+						username: friend.username,
+						nickname: friend.nickname,
+						profilePicture: friend.profilePicture,
+						status: status,
+					};
+					return friendWithStatus;
+				});
+
+			const friendStatus = await Promise.all(friendStatusPromises);
+
+			const friendSpacesPromises: Promise<FriendStatusType>[] =
+				friendStatus.map(async (friend) => {
+					if (friend.status === null || friend.status === "online")
+						return friend;
+					const friendSpace = await db
+						.select()
+						.from(spaces)
+						.where(eq(spaces.id, friend.status as string))
+						.then((result) => result[0]);
+
+					if (friendSpace) {
+						friend.status = {
+							name: friendSpace.name,
+							id: friendSpace.id,
+						};
+					}
+					return friend;
+				});
+			const friendSpaces = await Promise.all(friendSpacesPromises);
+			return friendSpaces;
 		} catch (error) {
 			console.error("Error getting friends:", error);
 			return [];
