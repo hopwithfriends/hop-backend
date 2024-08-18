@@ -8,9 +8,13 @@ import { friends, spaces, userStatus, users } from "./schema";
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
 		try {
-			const user = await db.select().from(users).where(eq(users.id, userId));
-			if (user.length > 0) {
-				return user[0];
+			const user = await db
+				.select()
+				.from(users)
+				.where(eq(users.id, userId))
+				.then((result) => result[0]);
+			if (user) {
+				return user;
 			}
 			return null;
 		} catch (error) {
@@ -30,9 +34,10 @@ export class UserMethods {
 				.update(users)
 				.set(validatedData)
 				.where(eq(users.id, userId))
-				.returning();
+				.returning()
+				.then((result) => result[0]);
 
-			const validatedUpdatedUser = UserSchema.parse(updatedUser[0]);
+			const validatedUpdatedUser = UserSchema.parse(updatedUser);
 
 			if (!validatedUpdatedUser) return null;
 			return validatedUpdatedUser;
@@ -52,13 +57,13 @@ export class UserMethods {
 				.select()
 				.from(users)
 				.where(eq(users.id, userId))
-				.limit(1);
+				.then((result) => result[0]);
 
 			const friend = await db
 				.select()
 				.from(users)
 				.where(eq(users.username, username))
-				.limit(1);
+				.then((result) => result[0]);
 
 			if (!user || !friend) {
 				console.log("Users don't exist");
@@ -70,14 +75,8 @@ export class UserMethods {
 				.from(friends)
 				.where(
 					or(
-						and(
-							eq(friends.userId, user[0].id),
-							eq(friends.friendId, friend[0].id),
-						),
-						and(
-							eq(friends.userId, friend[0].id),
-							eq(friends.friendId, user[0].id),
-						),
+						and(eq(friends.userId, user.id), eq(friends.friendId, friend.id)),
+						and(eq(friends.userId, friend.id), eq(friends.friendId, user.id)),
 					),
 				);
 
@@ -89,10 +88,10 @@ export class UserMethods {
 				try {
 					await tx
 						.insert(friends)
-						.values({ userId: user[0].id, friendId: friend[0].id });
+						.values({ userId: user.id, friendId: friend.id });
 					await tx
 						.insert(friends)
-						.values({ userId: friend[0].id, friendId: user[0].id });
+						.values({ userId: friend.id, friendId: user.id });
 				} catch (error) {
 					await tx.rollback();
 					throw error;
@@ -156,12 +155,11 @@ export class UserMethods {
 					const friendOnline = await db
 						.select()
 						.from(userStatus)
-						.where(eq(userStatus.userId, friend.id));
+						.where(eq(userStatus.userId, friend.id))
+						.then((result) => result[0]);
 
-					if (friendOnline[0]) {
-						status = friendOnline[0].spaceId
-							? friendOnline[0].spaceId
-							: "online";
+					if (friendOnline) {
+						status = friendOnline.spaceId ? friendOnline.spaceId : "online";
 					}
 					const friendWithStatus: FriendStatusType = {
 						id: friend.id,
@@ -182,12 +180,13 @@ export class UserMethods {
 					const friendSpace = await db
 						.select()
 						.from(spaces)
-						.where(eq(spaces.id, friend.status as string));
+						.where(eq(spaces.id, friend.status as string))
+						.then((result) => result[0]);
 
-					if (friendSpace[0]) {
+					if (friendSpace) {
 						friend.status = {
-							name: friendSpace[0].name,
-							id: friendSpace[0].id,
+							name: friendSpace.name,
+							id: friendSpace.id,
 						};
 					}
 					return friend;
