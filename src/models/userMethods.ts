@@ -198,6 +198,30 @@ export class UserMethods {
 			return [];
 		}
 	}
+
+	async changeStatus(
+		userId: string,
+		addStatus = true,
+		spaceId: string | null = null,
+	) {
+		type UserDataType = {
+			userId: string;
+			spaceId?: string;
+		};
+
+		if (!addStatus) {
+			await db.delete(userStatus).where(eq(userStatus.userId, userId));
+			return true;
+		}
+
+		const userData: UserDataType = { userId };
+		if (!spaceId) {
+			userData.userId = userId;
+		}
+
+		await db.insert(userStatus).values(userData);
+		return true;
+	}
 }
 
 export default new UserMethods();

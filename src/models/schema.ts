@@ -60,6 +60,7 @@ export const userStatus = pgTable("user_status", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	userId: uuid("user_id")
 		.notNull()
+		.unique()
 		.references(() => users.id, { onDelete: "cascade" }),
 	spaceId: uuid("space_id").references(() => spaces.id, {
 		onDelete: "cascade",

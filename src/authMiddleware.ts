@@ -79,7 +79,7 @@ const authenticateUser = async (
 	});
 	if (res.ok) {
 		const data: StackWebhookDataType = await res.json();
-		console.log("JSON Response:", data);
+		console.log("Stack ID:", data.id);
 		if (data.id) {
 			return data.id;
 		}

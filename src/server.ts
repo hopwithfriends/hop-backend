@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import app from "./app";
+import server from "./app";
 import { client } from "./models";
 import * as schema from "./models/schema";
 
@@ -20,7 +20,7 @@ async function startServer() {
 		await client.connect();
 		console.log(`${new Date().toLocaleString()} + Connected to Database`);
 
-		app.listen(PORT, () => {
+		server.listen(PORT, () => {
 			console.log(`Server listening on port ${PORT}`);
 		});
 	} catch (error) {
