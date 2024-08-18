@@ -58,11 +58,11 @@ export class SpaceMethods {
 				const createdSpace = await tx
 					.insert(spaces)
 					.values(validatedSpace)
-					.returning();
+					.returning().then((result) => result[0]);
 
-				if (createdSpace[0].id) {
+				if (createdSpace.id) {
 					const spaceMember: SpaceMemberType = {
-						spaceId: createdSpace[0].id,
+						spaceId: createdSpace.id,
 						userId,
 						role: "owner",
 					};
@@ -71,7 +71,7 @@ export class SpaceMethods {
 
 					await tx.insert(spaceMembers).values(validatedSpaceMember);
 
-					return createdSpace[0];
+					return createdSpace;
 				}
 				return null;
 			});
@@ -90,7 +90,7 @@ export class SpaceMethods {
 			const spaceToDelete = await db
 				.select()
 				.from(spaces)
-				.where(eq(spaces.id, spaceId));
+				.where(eq(spaces.id, spaceId)).then((result) => result[0]);
 
 			if (!spaceToDelete) return false;
 
@@ -103,11 +103,11 @@ export class SpaceMethods {
 						eq(spaceMembers.spaceId, spaceId),
 						eq(spaceMembers.userId, userId),
 					),
-				);
+				).then((result) => result[0]);
 
-			if (!spaceOwner[0]) return false;
+			if (!spaceOwner) return false;
 
-			const appName = (spaceToDelete[0].flyUrl.match(
+			const appName = (spaceToDelete.flyUrl.match(
 				/(?<=https:\/\/).*?(?=\.fly\.dev)/,
 			) || [null])[0];
 
@@ -163,10 +163,10 @@ export class SpaceMethods {
 						eq(spaceMembers.spaceId, validatedSpaceMember.spaceId),
 						eq(spaceMembers.userId, validatedSpaceMember.userId),
 					),
-				);
+				).then((result) => result[0]);
 
 			console.log("memberExists", memberExists);
-			if (memberExists[0]) return false;
+			if (memberExists) return false;
 
 			await db.insert(spaceMembers).values(validatedSpaceMember);
 
@@ -189,14 +189,14 @@ export class SpaceMethods {
 				.where(
 					and(eq(spaceMembers.id, adminId), eq(spaceMembers.spaceId, spaceId)),
 				)
-				.then((result) => result[0]?.role),
+				.then((result) => result[0].role),
 			db
 				.select({ role: spaceMembers.role })
 				.from(spaceMembers)
 				.where(
 					and(eq(spaceMembers.id, userId), eq(spaceMembers.spaceId, spaceId)),
 				)
-				.then((result) => result[0]?.role),
+				.then((result) => result[0].role),
 		]);
 
 		const roleHierarchy = { owner: 3, editor: 2, member: 1, anonymous: 0 };
@@ -279,8 +279,8 @@ export class SpaceMethods {
 					password: spaces.password,
 				})
 				.from(spaces)
-				.where(eq(spaces.id, id));
-			return space[0];
+				.where(eq(spaces.id, id)).then((result) => result[0]);
+			return space;
 		} catch (error) {
 			console.log("Body does not have the correct information!");
 			return null;
