@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import app from "./app";
 import { client } from "./models";
+import server from "./app";
 import * as schema from "./models/schema";
 
 const PORT = process.env.PORT || 8080;
@@ -20,7 +20,7 @@ async function startServer() {
 		await client.connect();
 		console.log(`${new Date().toLocaleString()} + Connected to Database`);
 
-		app.listen(PORT, () => {
+		server.listen(PORT, () => {
 			console.log(`Server listening on port ${PORT}`);
 		});
 	} catch (error) {
