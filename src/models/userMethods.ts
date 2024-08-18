@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "../server";
 import type { UserType } from "../types";
 import { UserSchema } from "../types";
-import { friends, users } from "./schema";
+import { friends, users, userStatus } from "./schema";
 
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
@@ -148,6 +148,30 @@ export class UserMethods {
 			console.error("Error getting friends:", error);
 			return [];
 		}
+	}
+
+	async changeStatus(
+		userId: string,
+		addStatus = true,
+		spaceId: string | null = null,
+	) {
+		type UserDataType = {
+			userId: string;
+			spaceId?: string;
+		};
+
+		if (!addStatus) {
+			await db.delete(userStatus).where(eq(userStatus.userId, userId));
+			return true;
+		}
+
+		const userData: UserDataType = { userId };
+		if (!spaceId) {
+			userData.userId = userId;
+		}
+
+		await db.insert(userStatus).values(userData);
+		return true;
 	}
 }
 
