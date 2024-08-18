@@ -8,7 +8,11 @@ import { friends, spaces, userStatus, users } from "./schema";
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
 		try {
-			const user = await db.select().from(users).where(eq(users.id, userId)).then((result) => result[0]);
+			const user = await db
+				.select()
+				.from(users)
+				.where(eq(users.id, userId))
+				.then((result) => result[0]);
 			if (user) {
 				return user;
 			}
@@ -30,7 +34,8 @@ export class UserMethods {
 				.update(users)
 				.set(validatedData)
 				.where(eq(users.id, userId))
-				.returning().then((result) => result[0]);
+				.returning()
+				.then((result) => result[0]);
 
 			const validatedUpdatedUser = UserSchema.parse(updatedUser);
 
@@ -51,12 +56,14 @@ export class UserMethods {
 			const user = await db
 				.select()
 				.from(users)
-				.where(eq(users.id, userId)).then((result) => result[0]);
+				.where(eq(users.id, userId))
+				.then((result) => result[0]);
 
 			const friend = await db
 				.select()
 				.from(users)
-				.where(eq(users.username, username)).then((result) => result[0])
+				.where(eq(users.username, username))
+				.then((result) => result[0]);
 
 			if (!user || !friend) {
 				console.log("Users don't exist");
@@ -68,14 +75,8 @@ export class UserMethods {
 				.from(friends)
 				.where(
 					or(
-						and(
-							eq(friends.userId, user.id),
-							eq(friends.friendId, friend.id),
-						),
-						and(
-							eq(friends.userId, friend.id),
-							eq(friends.friendId, user.id),
-						),
+						and(eq(friends.userId, user.id), eq(friends.friendId, friend.id)),
+						and(eq(friends.userId, friend.id), eq(friends.friendId, user.id)),
 					),
 				);
 
@@ -154,12 +155,11 @@ export class UserMethods {
 					const friendOnline = await db
 						.select()
 						.from(userStatus)
-						.where(eq(userStatus.userId, friend.id)).then((result) => result[0]);
+						.where(eq(userStatus.userId, friend.id))
+						.then((result) => result[0]);
 
 					if (friendOnline) {
-						status = friendOnline.spaceId
-							? friendOnline.spaceId
-							: "online";
+						status = friendOnline.spaceId ? friendOnline.spaceId : "online";
 					}
 					const friendWithStatus: FriendStatusType = {
 						id: friend.id,
@@ -180,7 +180,8 @@ export class UserMethods {
 					const friendSpace = await db
 						.select()
 						.from(spaces)
-						.where(eq(spaces.id, friend.status as string)).then((result) => result[0]);
+						.where(eq(spaces.id, friend.status as string))
+						.then((result) => result[0]);
 
 					if (friendSpace) {
 						friend.status = {

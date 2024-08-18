@@ -58,7 +58,8 @@ export class SpaceMethods {
 				const createdSpace = await tx
 					.insert(spaces)
 					.values(validatedSpace)
-					.returning().then((result) => result[0]);
+					.returning()
+					.then((result) => result[0]);
 
 				if (createdSpace.id) {
 					const spaceMember: SpaceMemberType = {
@@ -90,7 +91,8 @@ export class SpaceMethods {
 			const spaceToDelete = await db
 				.select()
 				.from(spaces)
-				.where(eq(spaces.id, spaceId)).then((result) => result[0]);
+				.where(eq(spaces.id, spaceId))
+				.then((result) => result[0]);
 
 			if (!spaceToDelete) return false;
 
@@ -103,7 +105,8 @@ export class SpaceMethods {
 						eq(spaceMembers.spaceId, spaceId),
 						eq(spaceMembers.userId, userId),
 					),
-				).then((result) => result[0]);
+				)
+				.then((result) => result[0]);
 
 			if (!spaceOwner) return false;
 
@@ -163,7 +166,8 @@ export class SpaceMethods {
 						eq(spaceMembers.spaceId, validatedSpaceMember.spaceId),
 						eq(spaceMembers.userId, validatedSpaceMember.userId),
 					),
-				).then((result) => result[0]);
+				)
+				.then((result) => result[0]);
 
 			console.log("memberExists", memberExists);
 			if (memberExists) return false;
@@ -279,7 +283,8 @@ export class SpaceMethods {
 					password: spaces.password,
 				})
 				.from(spaces)
-				.where(eq(spaces.id, id)).then((result) => result[0]);
+				.where(eq(spaces.id, id))
+				.then((result) => result[0]);
 			return space;
 		} catch (error) {
 			console.log("Body does not have the correct information!");
