@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "../server";
 import type { UserType } from "../types";
 import { UserSchema } from "../types";
-import { friends, users, userStatus } from "./schema";
+import { friends, userStatus, users } from "./schema";
 
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {

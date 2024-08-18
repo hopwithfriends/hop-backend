@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { client } from "./models";
 import server from "./app";
+import { client } from "./models";
 import * as schema from "./models/schema";
 
 const PORT = process.env.PORT || 8080;

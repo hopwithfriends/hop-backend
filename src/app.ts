@@ -1,18 +1,18 @@
+import { createServer } from "node:http";
+import { instrument } from "@socket.io/admin-ui";
 // import Sentry from "@sentry/node";
 import cors from "cors";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
+import { Server } from "socket.io";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import { authMiddleware } from "./authMiddleware";
 import spaceController from "./controllers/spaceController";
+import userMethods from "./models/userMethods";
 import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
-import { createServer } from "node:http";
-import { Server } from "socket.io";
-import userMethods from "./models/userMethods";
-import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
 
