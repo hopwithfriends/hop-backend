@@ -38,22 +38,70 @@ class SpaceController {
 		}
 	}
 
-	async postUserToSpace(req: Request, res: Response): Promise<void> {
+	async postSpaceRequest(req: Request, res: Response): Promise<void> {
 		try {
+			const userId = req.user;
 			const { spaceId, friendId, role } = req.body;
-			const addedMember = await spaceMethods.addUserToSpace(
+			const invitedMember = await spaceMethods.insertSpaceRequest(
 				spaceId,
+				userId,
 				friendId,
 				role,
 			);
 
-			if (addedMember) {
-				res.status(201).send("Added user!");
+			if (invitedMember) {
+				res.status(201).send("Invited user!");
 			} else {
-				res.status(400).send("Could not add user to space!");
+				res.status(400).send("Could not invite user to space!");
 			}
 		} catch (error) {
 			res.status(500).send("Server Issues!");
+		}
+	}
+
+	async postAcceptSpaceRequest(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const { requestId } = req.params;
+			const acceptedInvite = await spaceMethods.acceptSpaceRequest(
+				requestId,
+				userId,
+			);
+			if (acceptedInvite) {
+				res.status(201).send("Created: User invited to space!");
+			} else {
+				res.status(400).send("Error: Could not accept invite!");
+			}
+		} catch (error) {
+			res.status(500).send("Server Issues!");
+		}
+	}
+
+	async deleteSpaceRequest(req: Request, res: Response): Promise<void> {
+		try {
+			const { requestId } = req.params;
+			const rejectedInvite = await spaceMethods.rejectSpaceRequest(requestId);
+			if (rejectedInvite) {
+				res.status(200).send("Rejected invite!");
+			} else {
+				res.status(400).send("Error: Could not reject invite!");
+			}
+		} catch (error) {
+			res.status(500).send("Server Issues!");
+		}
+	}
+
+	async getAllSpaceRequests(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const requests = await spaceMethods.findAllSpaceRequests(userId);
+			if (requests) {
+				res.status(200).send(requests);
+			} else {
+				res.status(400).send("Error: Could not fetch requests!");
+			}
+		} catch (error) {
+			res.status(500).send("Server failed to fetch space requests");
 		}
 	}
 
@@ -72,7 +120,7 @@ class SpaceController {
 				res.status(400).send("Could not remove user from space!");
 			}
 		} catch (error) {
-			res.status(500).send("Server Issues!");
+			res.status(500).send("Server failed to remove user from space");
 		}
 	}
 
@@ -82,7 +130,7 @@ class SpaceController {
 			const adminSpaces = await spaceMethods.findOwnedSpaces(userId);
 			res.status(200).send(adminSpaces);
 		} catch (error) {
-			res.status(500).send("Could not fetch your spaces!");
+			res.status(500).send("Server failed to fetch your spaces");
 		}
 	}
 
@@ -92,7 +140,7 @@ class SpaceController {
 			const memberSpaces = await spaceMethods.findInvitedSpaces(userId);
 			res.status(200).send(memberSpaces);
 		} catch (error) {
-			res.status(500).send("Could not fetch your invited spaces!");
+			res.status(500).send("Server failed to fetch invited spaces");
 		}
 	}
 

@@ -5,12 +5,19 @@ import { db } from "../server";
 import type {
 	RolesEnumType,
 	SpaceMemberType,
+	SpaceRequestType,
 	SpaceType,
 	ThemesEnumType,
 } from "../types";
+import {
+	RoleEnum,
+	SpaceMemberSchema,
+	SpaceRequestSchema,
+	SpaceSchema,
+} from "../types";
+import { spaceMembers, spaceRequests, spaces } from "./schema";
+
 const FLY_API_URL = process.env.FLY_API_URL || "http://localhost:5000/api/apps";
-import { RoleEnum, SpaceMemberSchema, SpaceSchema } from "../types";
-import { spaceMembers, spaces } from "./schema";
 
 export class SpaceMethods {
 	async insertSpace(
@@ -144,19 +151,21 @@ export class SpaceMethods {
 		}
 	}
 
-	async addUserToSpace(
+	async insertSpaceRequest(
 		spaceId: string,
-		userId: string,
+		inviterId: string,
+		invitedId: string,
 		role: RolesEnumType,
 	): Promise<boolean> {
 		try {
-			const spaceMember: SpaceMemberType = {
+			const spaceMember: SpaceRequestType = {
 				spaceId,
-				userId,
+				inviterId,
+				invitedId,
 				role,
 			};
 
-			const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
+			const validatedSpaceMember = SpaceRequestSchema.parse(spaceMember);
 
 			const memberExists = await db
 				.select()
@@ -164,7 +173,7 @@ export class SpaceMethods {
 				.where(
 					and(
 						eq(spaceMembers.spaceId, validatedSpaceMember.spaceId),
-						eq(spaceMembers.userId, validatedSpaceMember.userId),
+						eq(spaceMembers.userId, validatedSpaceMember.invitedId),
 					),
 				)
 				.then((result) => result[0]);
@@ -172,7 +181,7 @@ export class SpaceMethods {
 			console.log("memberExists", memberExists);
 			if (memberExists) return false;
 
-			await db.insert(spaceMembers).values(validatedSpaceMember);
+			await db.insert(spaceRequests).values(validatedSpaceMember);
 
 			return true;
 		} catch (error) {
@@ -183,6 +192,61 @@ export class SpaceMethods {
 			}
 			return false;
 		}
+	}
+
+	async acceptSpaceRequest(requestId: string, userId: string) {
+		try {
+			await db.transaction(async (tx) => {
+				const spaceInvite = await tx
+					.delete(spaceRequests)
+					.where(eq(spaceRequests.id, requestId))
+					.returning()
+					.then((result) => result[0]);
+
+				if (!spaceInvite) return false;
+
+				await tx
+					.delete(spaceRequests)
+					.where(
+						and(
+							eq(spaceRequests.spaceId, spaceInvite.spaceId),
+							eq(spaceRequests.invitedId, userId),
+						),
+					);
+
+				const spaceMember: SpaceMemberType = {
+					spaceId: spaceInvite.spaceId,
+					userId: spaceInvite.invitedId,
+					role: spaceInvite.role,
+				};
+
+				const validatedSpaceMember = SpaceMemberSchema.parse(spaceMember);
+
+				await tx.insert(spaceMembers).values(validatedSpaceMember);
+
+				return true;
+			});
+		} catch (error) {
+			console.error("Error accepting space invite:", error);
+			return false;
+		}
+	}
+
+	async rejectSpaceRequest(requestId: string): Promise<boolean> {
+		try {
+			await db.delete(spaceRequests).where(eq(spaceRequests.id, requestId));
+			return true;
+		} catch (error) {
+			console.error("Error rejecting space invite:", error);
+			return false;
+		}
+	}
+
+	async findAllSpaceRequests(userId: string) {
+		return await db
+			.select()
+			.from(spaceRequests)
+			.where(eq(spaceRequests.invitedId, userId));
 	}
 
 	async removeUserFromSpace(spaceId: string, adminId: string, userId: string) {
