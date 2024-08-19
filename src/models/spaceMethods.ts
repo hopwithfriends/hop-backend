@@ -8,6 +8,7 @@ import type {
 	SpaceRequestType,
 	SpaceType,
 	ThemesEnumType,
+	UserType,
 } from "../types";
 import {
 	RoleEnum,
@@ -15,7 +16,7 @@ import {
 	SpaceRequestSchema,
 	SpaceSchema,
 } from "../types";
-import { spaceMembers, spaceRequests, spaces } from "./schema";
+import { spaceMembers, spaceRequests, spaces, users } from "./schema";
 
 const FLY_API_URL = process.env.FLY_API_URL || "http://localhost:5000/api/apps";
 
@@ -353,6 +354,123 @@ export class SpaceMethods {
 		} catch (error) {
 			console.log("Body does not have the correct information!");
 			return null;
+		}
+	}
+
+	async findSpaceMembers(spaceId: string): Promise<UserType[] | null> {
+		try {
+			const spaceMember = await db
+				.select()
+				.from(spaceMembers)
+				.where(eq(spaceMembers.spaceId, spaceId));
+
+			if (!spaceMember.length) return null;
+			const spaceMemberInfoPromises = spaceMember.map(async (member) => {
+				const spaceUser = await db
+					.select()
+					.from(users)
+					.where(eq(users.id, member.userId))
+					.then((result) => result[0]);
+				return spaceUser;
+			});
+			const spaceMemberInfo = await Promise.all(spaceMemberInfoPromises);
+			return spaceMemberInfo;
+		} catch (error) {
+			console.log("Body does not have the correct information!");
+			return null;
+		}
+	}
+
+	async findMySpaceRole(
+		spaceId: string,
+		userId: string,
+	): Promise<string | null> {
+		try {
+			const role = await db
+				.select({ role: spaceMembers.role })
+				.from(spaceMembers)
+				.where(
+					and(
+						eq(spaceMembers.spaceId, spaceId),
+						eq(spaceMembers.userId, userId),
+					),
+				)
+				.then((result) => result[0].role);
+			return role;
+		} catch (error) {
+			console.log("Body does not have the correct information!");
+			return null;
+		}
+	}
+
+	async editSpace(
+		userId: string,
+		spaceId: string,
+		spaceName: string,
+		spaceTheme: ThemesEnumType,
+	): Promise<boolean> {
+		try {
+			const userRole = await db
+				.select({ role: spaceMembers.role })
+				.from(spaceMembers)
+				.where(
+					and(
+						eq(spaceMembers.spaceId, spaceId),
+						eq(spaceMembers.userId, userId),
+					),
+				)
+				.then((result) => result[0].role);
+
+			if (userRole !== "owner") return false;
+
+			await db
+				.update(spaces)
+				.set({ name: spaceName, theme: spaceTheme })
+				.where(eq(spaces.id, spaceId));
+
+			return true;
+		} catch (error) {
+			console.log(error);
+			return false;
+		}
+	}
+
+	async editUserRole(
+		ownerId: string,
+		userId: string,
+		spaceId: string,
+		role: string,
+	): Promise<boolean> {
+		try {
+			const userRole = await db
+				.select()
+				.from(spaceMembers)
+				.where(
+					and(
+						eq(spaceMembers.spaceId, spaceId),
+						eq(spaceMembers.userId, ownerId),
+					),
+				)
+				.then((result) => result[0].role);
+
+			if (userRole !== "owner") return false;
+
+			if (!Object.values(RoleEnum).includes(role as RolesEnumType))
+				return false;
+			await db
+				.update(spaceMembers)
+				.set({ role: role as RolesEnumType })
+				.where(
+					and(
+						eq(spaceMembers.spaceId, spaceId),
+						eq(spaceMembers.userId, userId),
+					),
+				);
+
+			return true;
+		} catch (error) {
+			console.log(error);
+			return false;
 		}
 	}
 }

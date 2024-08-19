@@ -77,9 +77,9 @@
 				}
 			}
 		},
-		"/api/user/friend/{username}": {
+		"/api/user/friend/request/{username}": {
 			"post": {
-				"summary": "🔒 Add a friend",
+				"summary": "🔒 Send a friend request",
 				"tags": ["User"],
 				"parameters": [
 					{
@@ -100,6 +100,87 @@
 					},
 					"500": {
 						"description": "Error adding friend"
+					}
+				}
+			}
+		},
+		"/api/user/friend/request": {
+			"get": {
+				"summary": "🔒 Get all friend requests",
+				"tags": ["User"],
+				"responses": {
+					"200": {
+						"description": "Sucessful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/FriendRequest"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Could not fetch the requests"
+					},
+					"500": {
+						"description": "Server could not fetch the requests"
+					}
+				}
+			}
+		},
+		"/api/user/friend/request/{requestId}": {
+			"post": {
+				"summary": "🔒 Accept a friend request",
+				"tags": ["User"],
+				"parameters": [
+					{
+						"name": "requestId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "friend request accepted"
+					},
+					"400": {
+						"description": "could not accept request"
+					},
+					"500": {
+						"description": "Server could not accept request"
+					}
+				}
+			},
+			"delete": {
+				"summary": "🔒 Decline a friend request",
+				"tags": ["User"],
+				"parameters": [
+					{
+						"name": "requestId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "friend request declined"
+					},
+					"400": {
+						"description": "could not decline request"
+					},
+					"500": {
+						"description": "Server could not decline request"
 					}
 				}
 			}
@@ -155,14 +236,14 @@
 				}
 			}
 		},
-		"/api/spaceId/{id}": {
+		"/api/spaceId/{spaceId}": {
 			"get": {
 				"tags": ["Space"],
 				"x-auth-type": "None",
 				"summary": "🔓 Get space by ID",
 				"parameters": [
 					{
-						"name": "id",
+						"name": "spaceId",
 						"in": "path",
 						"required": true,
 						"schema": {
@@ -225,13 +306,13 @@
 				}
 			}
 		},
-		"/api/space/{id}": {
+		"/api/space/{spaceId}": {
 			"delete": {
 				"summary": "🔒 Delete a space",
 				"tags": ["Space"],
 				"parameters": [
 					{
-						"name": "id",
+						"name": "spaceId",
 						"in": "path",
 						"required": true,
 						"schema": {
@@ -253,9 +334,36 @@
 				}
 			}
 		},
-		"/api/space/addUser": {
+		"/api/space/edit": {
+			"put": {
+				"summary": "🔒 Edit space name and theme",
+				"tags": ["Space"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SpaceEdit"
+							}
+						}
+					}
+				},
+				"responses": {
+					"202": {
+						"description": "Space edited sucessfully"
+					},
+					"400": {
+						"description": "You don't have permission to change the space"
+					},
+					"500": {
+						"description": "Server failed to edit space"
+					}
+				}
+			}
+		},
+		"/api/space/request": {
 			"post": {
-				"summary": "🔒 Add a user to a space",
+				"summary": "🔒 Send invite to a user to join a space",
 				"tags": ["Space"],
 				"requestBody": {
 					"required": true,
@@ -276,6 +384,85 @@
 					},
 					"500": {
 						"description": "Server error"
+					}
+				}
+			},
+			"get": {
+				"summary": "🔒 Get all space requests",
+				"tags": ["Space"],
+				"responses": {
+					"200": {
+						"description": "Sucessful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SpaceRequest"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Could not fetch the requests"
+					},
+					"500": {
+						"description": "Server could not fetch the requests"
+					}
+				}
+			}
+		},
+		"/api/space/request/{requestId}": {
+			"post": {
+				"summary": "🔒 Accept a space request",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "requestId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "space request accepted"
+					},
+					"400": {
+						"description": "could not accept request"
+					},
+					"500": {
+						"description": "Server could not accept request"
+					}
+				}
+			},
+			"delete": {
+				"summary": "🔒 Decline a space request",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "requestId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "space request declined"
+					},
+					"400": {
+						"description": "could not decline request"
+					},
+					"500": {
+						"description": "Server could not decline request"
 					}
 				}
 			}
@@ -364,6 +551,106 @@
 					}
 				}
 			}
+		},
+		"/api/space/spaceMembers/{spaceId}": {
+			"get": {
+				"summary": "🔒 Get space members information",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "spaceId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SpaceMember"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Space not found"
+					},
+					"500": {
+						"description": "Server failed to fetch space"
+					}
+				}
+			}
+		},
+		"/api/space/ownSpaceRole/{spaceId}": {
+			"get": {
+				"summary": "🔒 Get space members information",
+				"tags": ["Space"],
+				"parameters": [
+					{
+						"name": "spaceId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Sucessful response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Role"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Space not found"
+					},
+					"500": {
+						"description": "Server failed to fetch space"
+					}
+				}
+			}
+		},
+		"/api/space/changeRole": {
+			"put": {
+				"summary": "🔒 Edit space role of a user",
+				"tags": ["Space"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EditRole"
+							}
+						}
+					}
+				},
+				"responses": {
+					"202": {
+						"description": "User role edited sucessfully"
+					},
+					"400": {
+						"description": "You don't have permission to change the user role"
+					},
+					"500": {
+						"description": "Server failed to edit user role"
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -441,6 +728,22 @@
 					}
 				}
 			},
+			"EditRole": {
+				"type": "object",
+				"properties": {
+					"userId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"spaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"role": {
+						"type": "string"
+					}
+				}
+			},
 			"NewSpace": {
 				"type": "object",
 				"properties": {
@@ -479,6 +782,93 @@
 					},
 					"password": {
 						"type": "string"
+					}
+				}
+			},
+			"SpaceEdit": {
+				"type": "object",
+				"properties": {
+					"spaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"spaceName": {
+						"type": "string"
+					},
+					"spaceTheme": {
+						"type": "string"
+					}
+				}
+			},
+			"SpaceMember": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"userId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"spaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"role": {
+						"type": "string",
+						"enum": ["anonymous", "member", "editor", "owner"]
+					}
+				}
+			},
+			"SpaceRequest": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"spaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"inviterId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"invitedId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"role": {
+						"type": "string",
+						"enum": ["anonymous", "member", "editor", "owner"]
+					}
+				}
+			},
+			"FriendRequest": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"userId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"friendId": {
+						"type": "string",
+						"format": "uuid"
+					}
+				}
+			},
+			"Role": {
+				"type": "object",
+				"properties": {
+					"role": {
+						"type": "string",
+						"enum": ["anonymous", "member", "editor", "owner"]
 					}
 				}
 			},

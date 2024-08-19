@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
+import { themeEnum } from "../models/schema";
 import spaceMethods from "../models/spaceMethods";
+import type { ThemesEnumType } from "../types";
 
 class SpaceController {
 	async postSpace(req: Request, res: Response): Promise<void> {
@@ -26,8 +28,8 @@ class SpaceController {
 	async deleteSpace(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;
-			const { id } = req.params;
-			const deletedSpace = await spaceMethods.deleteSpace(id, userId);
+			const { spaceId } = req.params;
+			const deletedSpace = await spaceMethods.deleteSpace(spaceId, userId);
 			if (deletedSpace) {
 				res.status(202).send("Space deleted!");
 			} else {
@@ -146,8 +148,8 @@ class SpaceController {
 
 	async getSpaceById(req: Request, res: Response): Promise<void> {
 		try {
-			const { id } = req.params;
-			const spaceFound = await spaceMethods.findSpace(id);
+			const { spaceId } = req.params;
+			const spaceFound = await spaceMethods.findSpace(spaceId);
 			if (spaceFound) {
 				res.status(200).send(spaceFound);
 			} else {
@@ -155,6 +157,73 @@ class SpaceController {
 			}
 		} catch (error) {
 			res.status(500).send("Server failed to fetch space!");
+		}
+	}
+
+	async getSpaceMembers(req: Request, res: Response): Promise<void> {
+		try {
+			const { spaceId } = req.params;
+			const spaceFound = await spaceMethods.findSpaceMembers(spaceId);
+			if (spaceFound) res.status(200).send(spaceFound);
+
+			res.status(400).send("Space not found!");
+		} catch (error) {
+			res.status(500).send("Server failed to fetch space!");
+		}
+	}
+
+	async getSpaceRole(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const { spaceId } = req.params;
+			const spaceRole = await spaceMethods.findMySpaceRole(spaceId, userId);
+			if (spaceRole) res.status(200).send({ role: spaceRole });
+			res.status(400).send("User does not belong to space!");
+		} catch (error) {
+			res.status(500).send("Server failed to fetch role!");
+		}
+	}
+
+	async putSpace(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const { spaceId, spaceName, spaceTheme } = req.body;
+
+			if (!Object.values(themeEnum).includes(spaceTheme))
+				res.status(400).send("wrong theme");
+			const realSpaceTheme = spaceTheme as ThemesEnumType;
+			const spaceEdit = await spaceMethods.editSpace(
+				userId,
+				spaceId,
+				spaceName,
+				realSpaceTheme,
+			);
+
+			if (spaceEdit) res.status(200).send("Space Edited");
+
+			res.status(400).send("You don't have permission to change the space");
+		} catch (error) {
+			res.status(500).send("Server failed to edit space");
+		}
+	}
+
+	async putUserRole(req: Request, res: Response): Promise<void> {
+		try {
+			const ownerId = req.user;
+			const { userId, spaceId, role } = req.body;
+			const editUser = await spaceMethods.editUserRole(
+				ownerId,
+				userId,
+				spaceId,
+				role,
+			);
+
+			if (editUser) res.status(202).send("User role edited");
+			res
+				.status(400)
+				.send("You don't have permission to change this user's role");
+		} catch (error) {
+			res.status(500).send("Server could not edit the user role!");
 		}
 	}
 }
