@@ -381,7 +381,10 @@ export class SpaceMethods {
 		}
 	}
 
-	async findMySpaceRole(spaceId: string, userId: string): Promise<string | null> {
+	async findMySpaceRole(
+		spaceId: string,
+		userId: string,
+	): Promise<string | null> {
 		try {
 			const role = await db
 				.select({ role: spaceMembers.role })

@@ -177,7 +177,7 @@ class SpaceController {
 			const userId = req.user;
 			const { spaceId } = req.params;
 			const spaceRole = await spaceMethods.findMySpaceRole(spaceId, userId);
-			if (spaceRole) res.status(200).send({role: spaceRole});
+			if (spaceRole) res.status(200).send({ role: spaceRole });
 			res.status(400).send("User does not belong to space!");
 		} catch (error) {
 			res.status(500).send("Server failed to fetch role!");

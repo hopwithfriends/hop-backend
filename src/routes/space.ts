@@ -6,7 +6,7 @@ export const spaceRouter = express.Router();
 // Basic
 spaceRouter.post("/", spaceController.postSpace);
 spaceRouter.delete("/:spaceId", spaceController.deleteSpace);
-spaceRouter.put("/edit", spaceController.putSpace)
+spaceRouter.put("/edit", spaceController.putSpace);
 
 // Requests
 spaceRouter.post("/request", spaceController.postSpaceRequest);
@@ -23,7 +23,7 @@ spaceRouter.delete(
 spaceRouter.get("/mySpaces", spaceController.getAdminSpaces);
 spaceRouter.get("/invitedSpaces", spaceController.getInvitedSpaces);
 spaceRouter.get("/spaceMembers/:spaceId", spaceController.getSpaceMembers);
-spaceRouter.get("/ownSpaceRole/:spaceId",spaceController.getSpaceRole)
+spaceRouter.get("/ownSpaceRole/:spaceId", spaceController.getSpaceRole);
 spaceRouter.put("/changeRole", spaceController.putUserRole);
 
 export default spaceRouter;
