@@ -10,7 +10,18 @@ userRouter.get("/", userController.getOneUser);
 userRouter.put("/", upload.single("profilePicture"), userController.putUser);
 
 // Friend
-userRouter.post("/friend/:username", userController.postFriendController);
+// userRouter.post("/friend/:username", userController.postFriendController);
+userRouter.post("/friend/request/:username", userController.postFriendRequest);
+userRouter.get("/friend/request", userController.getAllFriendRequests);
+userRouter.post(
+	"/friend/request/:friendRequestId",
+	userController.acceptFriendRequest,
+);
+userRouter.delete(
+	"/friend/request/:friendRequestId",
+	userController.rejectFriendRequest,
+);
+
 userRouter.delete("/friend/:friendId", userController.deleteFriendController);
 userRouter.get("/friend", userController.getAllFriends);
 

@@ -37,6 +37,14 @@ export const SpaceMemberSchema = z.object({
 	lastConnection: z.date().optional(),
 });
 
+export const SpaceRequestSchema = z.object({
+	id: z.string().uuid().optional(),
+	spaceId: z.string().uuid(),
+	inviterId: z.string().uuid(),
+	invitedId: z.string().uuid(),
+	role: z.enum(RoleEnum),
+});
+
 export const UserStatusSchema = z.object({
 	id: z.string().uuid().optional(),
 	userId: z.string().uuid(),
@@ -60,14 +68,22 @@ export const StackWebhookSchema = z.object({
 	data: StackWebhookDataSchema,
 });
 
+export const FriendRequestSchema = z.object({
+	id: z.string().uuid(),
+	userId: z.string().uuid(),
+	friendId: z.string().uuid(),
+});
+
 // Typescript Types inferred from Zod Schemas
 export type UserType = z.infer<typeof UserSchema>;
 export type SpaceType = z.infer<typeof SpaceSchema>;
 export type FriendType = z.infer<typeof FriendSchema>;
 export type SpaceMemberType = z.infer<typeof SpaceMemberSchema>;
+export type SpaceRequestType = z.infer<typeof SpaceRequestSchema>;
 export type UserStatusType = z.infer<typeof UserStatusSchema>;
 export type RolesEnumType = z.infer<typeof RoleSchema>;
 export type ThemesEnumType = z.infer<typeof ThemeSchema>;
+export type FriendRequestType = z.infer<typeof FriendRequestSchema>;
 
 export type StackWebhookDataType = z.infer<typeof StackWebhookDataSchema>;
 export type StackWebhookType = z.infer<typeof StackWebhookSchema>;

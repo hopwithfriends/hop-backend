@@ -63,6 +63,67 @@ class UserController {
 		}
 	}
 
+	async postFriendRequest(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const { username } = req.params;
+
+			const success = await userMethods.insertFriendRequest(userId, username);
+
+			if (success) {
+				res.status(201).send("Friend request created successfully");
+			} else {
+				res.status(400).send("Failed to create friend request");
+			}
+		} catch (error) {
+			res.status(500).send("Could not create friend request!");
+		}
+	}
+
+	async getAllFriendRequests(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const friendRequests = await userMethods.findAllFriendRequests(userId);
+			res.status(200).send(friendRequests);
+		} catch (error) {
+			res.status(500).send("Failed to fetch friend requests");
+		}
+	}
+
+	async acceptFriendRequest(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = req.user;
+			const { friendRequestId } = req.params;
+
+			const success = await userMethods.acceptFriendRequest(
+				userId,
+				friendRequestId,
+			);
+
+			if (success) {
+				res.status(201).send("Friend request accepted successfully");
+			} else {
+				res.status(400).send("Failed to accept friend request");
+			}
+		} catch (error) {
+			res.status(500).send("Failed to accept friend request");
+		}
+	}
+
+	async rejectFriendRequest(req: Request, res: Response): Promise<void> {
+		try {
+			const { friendRequestId } = req.params;
+			const success = await userMethods.deleteFriendRequest(friendRequestId);
+			if (success) {
+				res.status(201).send("Friend request rejected successfully");
+			} else {
+				res.status(400).send("Failed to reject friend request");
+			}
+		} catch (error) {
+			res.status(500).send("Failed to reject friend request");
+		}
+	}
+
 	async postFriendController(req: Request, res: Response): Promise<void> {
 		try {
 			const userId = req.user;

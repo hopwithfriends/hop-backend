@@ -1,9 +1,9 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../server";
-import type { FriendStatusType, UserType } from "../types";
+import type { FriendRequestType, FriendStatusType, UserType } from "../types";
 import { UserSchema } from "../types";
-import { friends, spaces, userStatus, users } from "./schema";
+import { friendRequests, friends, spaces, userStatus, users } from "./schema";
 
 export class UserMethods {
 	async findUserById(userId: string): Promise<UserType | null> {
@@ -51,6 +51,109 @@ export class UserMethods {
 		}
 	}
 
+	// ! TODO: Check if friend request already exists, if it does - make both users friends
+	// ! TODO: Can't friend request twice
+	async insertFriendRequest(
+		userId: string,
+		username: string,
+	): Promise<boolean> {
+		try {
+			const user = await db
+				.select()
+				.from(users)
+				.where(eq(users.id, userId))
+				.then((result) => result[0]);
+			const friend = await db
+				.select()
+				.from(users)
+				.where(eq(users.username, username))
+				.then((result) => result[0]);
+
+			if (!user || !friend) {
+				console.log("Users don't exist");
+				return false;
+			}
+
+			const existingFriendship = await db
+				.select()
+				.from(friendRequests)
+				.where(
+					and(
+						eq(friendRequests.userId, user.id),
+						eq(friendRequests.friendId, friend.id),
+					),
+				);
+
+			if (existingFriendship.length > 0) {
+				console.log("Users are already friends");
+				return false;
+			}
+
+			await db
+				.insert(friendRequests)
+				.values({ userId: user.id, friendId: friend.id });
+			return true;
+		} catch (error) {
+			console.error("Error inserting friend request:", error);
+			return false;
+		}
+	}
+
+	async findAllFriendRequests(userId: string): Promise<FriendRequestType[]> {
+		try {
+			const allFriendRequests = await db
+				.select()
+				.from(friendRequests)
+				.where(eq(friendRequests.friendId, userId));
+			return allFriendRequests;
+		} catch (error) {
+			console.error("Error getting friend requests:", error);
+			throw new Error("Error getting friend requests");
+		}
+	}
+
+	async acceptFriendRequest(
+		userId: string,
+		friendRequestId: string,
+	): Promise<boolean> {
+		try {
+			await db.transaction(async (tx) => {
+				const friendRequest = await tx
+					.delete(friendRequests)
+					.where(eq(friendRequests.id, friendRequestId))
+					.returning()
+					.then((result) => result[0]);
+
+				if (!friendRequest) {
+					throw new Error("Friend request not found");
+				}
+
+				const friendId = friendRequest.userId;
+				await Promise.all([
+					tx.insert(friends).values({ userId, friendId }),
+					tx.insert(friends).values({ userId: friendId, friendId: userId }),
+				]);
+			});
+			return true;
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+			return false;
+		}
+	}
+
+	async deleteFriendRequest(friendRequestId: string): Promise<boolean> {
+		try {
+			await db
+				.delete(friendRequests)
+				.where(eq(friendRequests.id, friendRequestId));
+			return true;
+		} catch (error) {
+			console.error("Error rejecting friend request:", error);
+			return false;
+		}
+	}
+
+	// ! Redundant Method -> Needs removing now we're using friend requests
 	async insertFriend(userId: string, username: string): Promise<boolean> {
 		try {
 			const user = await db

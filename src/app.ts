@@ -74,7 +74,7 @@ instrument(io, {
 	mode: "development",
 });
 
-const connectedUsers = new Map();
+const connectedUsers = new Map<string, string>();
 
 // Add to Database & Connected Users Map
 async function addUser(userId: string, socketId: string) {
@@ -120,16 +120,34 @@ io.use(async (socket, next) => {
 	next();
 });
 
-io.on("connection", (socket) => {
-	socket.on("space", (arg) => {
-		// Implement move into Space
+io.on("connection", async (socket) => {
+	socket.on("space_request", async (arg) => {
+		const userId = socket.handshake.auth.token;
+		const onlineFriends = await checkOnlineFriends(userId);
+		if (onlineFriends) {
+			for (const [userId, friendId] of Object.entries(onlineFriends)) {
+				io.to(friendId.socketId).emit("online_friends", "updated");
+			}
+		}
+	});
+
+	socket.on("friend_request", async (arg) => {
+		const userId = socket.handshake.auth.token;
+		const onlineFriends = await checkOnlineFriends(userId);
+		if (onlineFriends) {
+			for (const [userId, friendId] of Object.entries(onlineFriends)) {
+				io.to(friendId.socketId).emit("online_friends", "updated");
+			}
+		}
 	});
 
 	socket.on("disconnect", async (arg) => {
 		const userId = socket.handshake.auth.token;
 		const onlineFriends = await checkOnlineFriends(userId);
 		if (onlineFriends) {
-			io.emit("online_friends", "updated");
+			for (const [userId, friendId] of Object.entries(onlineFriends)) {
+				io.to(friendId.socketId).emit("online_friends", "updated");
+			}
 		}
 		await deleteUser(userId);
 		console.log(`WSS - Disconnected: ${userId}`);
