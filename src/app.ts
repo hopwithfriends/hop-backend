@@ -13,11 +13,12 @@ import userMethods from "./models/userMethods";
 import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
+import morgan from "morgan";
 
 const app = express();
 
 const limiter = rateLimit({
-	windowMs: 1000, // 1 second
+	windowMs: 1000,
 	limit: 20,
 	standardHeaders: "draft-7",
 	legacyHeaders: false,
@@ -25,17 +26,18 @@ const limiter = rateLimit({
 app.use(cors());
 app.use(limiter);
 app.use(express.json());
+app.use(morgan("dev"));
 
-app.use((req, res, next) => {
-	// Logging Middleware
-	console.log("Request received at", new Date().toISOString());
-	console.log("Request method:", req.method);
-	console.log("Request URL:", req.url);
-	console.log("Request body:", req.body);
-	console.log("Request headers:", req.headers.referer);
-	console.log("-----------------");
-	next();
-});
+// app.use((req, res, next) => {
+// 	// Logging Middleware
+// 	console.log("Request received at", new Date().toISOString());
+// 	console.log("Request method:", req.method);
+// 	console.log("Request URL:", req.url);
+// 	console.log("Request body:", req.body);
+// 	console.log("Request headers:", req.headers.referer);
+// 	console.log("-----------------");
+// 	next();
+// });
 
 // No Auth Required
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
