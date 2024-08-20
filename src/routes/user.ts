@@ -14,7 +14,7 @@ userRouter.put("/", upload.single("profilePicture"), userController.putUser);
 userRouter.post("/friend/request/:username", userController.postFriendRequest);
 userRouter.get("/friend/request", userController.getAllFriendRequests);
 userRouter.post(
-	"/friend/request/:friendRequestId",
+	"/friend/addRequest/:friendRequestId",
 	userController.acceptFriendRequest,
 );
 userRouter.delete(
