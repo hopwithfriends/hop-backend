@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 
 // No Auth Required
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/spaceId/:id", spaceController.getSpaceById);
+app.use("/api/spaceId/:spaceId", spaceController.getSpaceById);
 app.get("/api", (req, res) => {
 	res.send("Hi, welcome to Hop API!");
 });
