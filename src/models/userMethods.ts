@@ -327,9 +327,9 @@ export class UserMethods {
 			return true;
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new Error(error.message);
+				console.error(error);
 			}
-			throw new Error(`Unknown Error: ${error}`);
+			console.error(`Unknown Error: ${error}`);
 		}
 	}
 
