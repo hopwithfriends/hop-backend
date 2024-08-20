@@ -30,32 +30,34 @@ export const printBot = async () => {
 	});
 
 	for (const space of activeSpaces) {
-		const page = await browser.newPage();
+		try {
+			const page = await browser.newPage();
 
-		await page.goto(space.flyUrl);
+			await page.goto(space.flyUrl);
 
-		await page.setViewport({ width: 1920, height: 1024 });
-		await page.locator("text/Connect").click();
-		await delay(2000);
-		await page.locator("#noVNC_password_input").click();
-		await delay(1000);
-		await page.keyboard.type(`${space.password}`);
-		await delay(500);
-		await page.locator("text/Send Password").click();
-		await delay(2000);
-		await page.screenshot({ path: "src/screenBot/screenshot.png" });
+			await page.setViewport({ width: 1920, height: 1024 });
+			await page.locator("text/Connect").click();
+			await delay(2000);
+			await page.locator("#noVNC_password_input").click();
+			await delay(1000);
+			await page.keyboard.type(`${space.password}`);
+			await delay(500);
+			await page.locator("text/Send Password").click();
+			await delay(2000);
+			await page.screenshot({ path: "src/screenBot/screenshot.png" });
 
-		const pictureLink = await cloudinary.uploader.upload(
-			"src/screenBot/screenshot.png",
-		);
+			const pictureLink = await cloudinary.uploader.upload(
+				"src/screenBot/screenshot.png",
+			);
 
-		await db
-			.update(spaces)
-			.set({
-				thumbnail: pictureLink.url,
-			})
-			.where(eq(spaces.id, space.id));
+			await db
+				.update(spaces)
+				.set({
+					thumbnail: pictureLink.url,
+				})
+				.where(eq(spaces.id, space.id));
 
-		await page.close();
+			await page.close();
+		} catch (err) {}
 	}
 };
