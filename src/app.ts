@@ -4,6 +4,7 @@ import { instrument } from "@socket.io/admin-ui";
 import cors from "cors";
 import express from "express";
 import { rateLimit } from "express-rate-limit";
+import morgan from "morgan";
 import { Server } from "socket.io";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
@@ -13,7 +14,6 @@ import userMethods from "./models/userMethods";
 import { authRouter } from "./routes/auth";
 import spaceRouter from "./routes/space";
 import userRouter from "./routes/user";
-import morgan from "morgan";
 
 const app = express();
 
