@@ -131,7 +131,7 @@
 				}
 			}
 		},
-		"/api/user/friend/request/{requestId}": {
+		"/api/user/friend/addRequest/{requestId}": {
 			"post": {
 				"summary": "🔒 Accept a friend request",
 				"tags": ["User"],
