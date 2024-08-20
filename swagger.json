@@ -782,6 +782,9 @@
 					},
 					"password": {
 						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
 					}
 				}
 			},

@@ -27,6 +27,7 @@ export const spaces = pgTable("spaces", {
 	password: text("password").notNull(),
 	flyUrl: text("fly_url").notNull().unique(),
 	theme: themeEnum("theme").notNull(),
+	thumbnail: text("thumbnail"),
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
