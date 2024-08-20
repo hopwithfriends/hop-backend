@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM satantime/puppeteer-node:20.9.0-bookworm
 
 WORKDIR /
 
