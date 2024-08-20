@@ -55,8 +55,8 @@ const generateStackHeaders = (
 	accessToken: string,
 	refreshToken: string,
 ): StackHeadersType | null => {
-	const projectId = process.env.PROJECT_ID;
-	const serverSecretKey = process.env.STACK_SECRET_SERVER_KEY;
+	const projectId = "4a214912-a16e-4f63-80e2-7b388e885bf7";
+	const serverSecretKey = "ssk_v75kk73zevzc7gbkgmm6jymt69jdj34rj9ggdv6nqfv20";
 
 	if (projectId && serverSecretKey) {
 		return {
