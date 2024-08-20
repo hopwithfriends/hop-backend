@@ -320,7 +320,6 @@ export class UserMethods {
 
 			console.log(currentUserStatus);
 			if (currentUserStatus.length === 0) {
-				console.log("Hit if statement");
 				await db.insert(userStatus).values({ userId });
 				return true;
 			}
