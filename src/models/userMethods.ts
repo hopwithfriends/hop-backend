@@ -102,10 +102,19 @@ export class UserMethods {
 	async findAllFriendRequests(userId: string): Promise<FriendRequestType[]> {
 		try {
 			const allFriendRequests = await db
-				.select()
+				.select({
+					id: friendRequests.id,
+					userId: {
+						id: users.id,
+						username: users.username,
+						profilePicture: users.profilePicture,
+					},
+					friendId: friendRequests.friendId,
+				})
 				.from(friendRequests)
-				.where(eq(friendRequests.friendId, userId));
-			return allFriendRequests;
+				.where(eq(friendRequests.friendId, userId))
+				.leftJoin(users, eq(users.id, friendRequests.userId));
+			return allFriendRequests as FriendRequestType[];
 		} catch (error) {
 			console.error("Error getting friend requests:", error);
 			throw new Error("Error getting friend requests");
@@ -302,28 +311,51 @@ export class UserMethods {
 		}
 	}
 
-	async changeStatus(
-		userId: string,
-		addStatus = true,
-		spaceId: string | null = null,
-	) {
-		type UserDataType = {
-			userId: string;
-			spaceId?: string;
-		};
+	async addStatus(userId: string) {
+		try {
+			const currentUserStatus = await db
+				.select()
+				.from(userStatus)
+				.where(eq(userStatus.userId, userId));
 
-		if (!addStatus) {
-			await db.delete(userStatus).where(eq(userStatus.userId, userId));
+			console.log(currentUserStatus);
+			if (currentUserStatus.length === 0) {
+				console.log("Hit if statement");
+				await db.insert(userStatus).values({ userId });
+				return true;
+			}
+			return true;
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new Error(error.message);
+			}
+			throw new Error(`Unknown Error: ${error}`);
+		}
+	}
+
+	async removeStatus(userId: string) {
+		await db.delete(userStatus).where(eq(userStatus.userId, userId));
+	}
+
+	async addSpaceStatus(userId: string, spaceId: string) {
+		const currentUserStatus = await db
+			.select()
+			.from(userStatus)
+			.where(eq(userStatus.userId, userId));
+		console.log(currentUserStatus);
+		if (currentUserStatus.length === 0) {
+			await db.insert(userStatus).values({ userId, spaceId });
 			return true;
 		}
-
-		const userData: UserDataType = { userId };
-		if (!spaceId) {
-			userData.userId = userId;
-		}
-
-		await db.insert(userStatus).values(userData);
+		await db
+			.update(userStatus)
+			.set({ spaceId: spaceId })
+			.where(eq(userStatus.userId, userId));
 		return true;
+	}
+
+	async removeSpaceStatus(userId: string) {
+		await db.update(userStatus).set({ userId, spaceId: null });
 	}
 }
 

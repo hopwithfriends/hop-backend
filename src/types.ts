@@ -70,7 +70,11 @@ export const StackWebhookSchema = z.object({
 
 export const FriendRequestSchema = z.object({
 	id: z.string().uuid(),
-	userId: z.string().uuid(),
+	userId: z.object({
+		id: z.string().uuid(),
+		profilePicture: z.string(),
+		username: z.string(),
+	}),
 	friendId: z.string().uuid(),
 });
 

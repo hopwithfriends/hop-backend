@@ -63,7 +63,11 @@ app.use(function onError(err, req, res, next) {
 const server = createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: ["http://localhost:3000", "https://admin.socket.io"],
+		origin: [
+			"http://localhost:3000",
+			"https://admin.socket.io",
+			"https://hop-sand.vercel.app/",
+		],
 		methods: ["GET", "POST"],
 		credentials: true,
 	},
@@ -82,12 +86,20 @@ async function addUser(userId: string, socketId: string) {
 		connectedUsers.delete(userId);
 	}
 	connectedUsers.set(userId, socketId);
-	await userMethods.changeStatus(userId);
+	await userMethods.addStatus(userId);
+}
+
+async function userJoinSpaceStatus(userId: string, spaceId: string) {
+	await userMethods.addSpaceStatus(userId, spaceId);
+}
+
+async function userLeaveSpaceStatus(userId: string) {
+	await userMethods.removeSpaceStatus(userId);
 }
 
 // Remove from DB & Connected Users Map
 async function deleteUser(userId: string) {
-	await userMethods.changeStatus(userId, false);
+	await userMethods.removeStatus(userId);
 	connectedUsers.delete(userId);
 }
 
@@ -129,6 +141,20 @@ io.on("connection", async (socket) => {
 				io.to(friendId.socketId).emit("online_friends", "updated");
 			}
 		}
+	});
+
+	socket.on("space_join", async (arg) => {
+		const userId = socket.handshake.auth.token;
+		const socketId = socket.id;
+		const spaceId = arg;
+		await userJoinSpaceStatus(userId, spaceId);
+	});
+
+	socket.on("space_leave", async (arg) => {
+		const userId = socket.handshake.auth.token;
+		const socketId = socket.id;
+		const spaceId = arg;
+		await userLeaveSpaceStatus(userId);
 	});
 
 	socket.on("friend_request", async (arg) => {
