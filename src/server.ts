@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import server from "./app";
 import { client } from "./models";
 import * as schema from "./models/schema";
+import { printBot } from "./screenBot/screenCapture";
 
 const PORT = process.env.PORT || 8080;
 
@@ -28,7 +29,8 @@ async function startServer() {
 		process.exit(1);
 	}
 }
-
+printBot();
+setInterval(printBot, 30 * 60 * 1000);
 startServer();
 
 export { db };
