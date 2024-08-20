@@ -25,7 +25,9 @@ export const printBot = async () => {
 			spaces.filter((space) => spacesToUpdate.includes(space.id)),
 		);
 
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({
+		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+	});
 
 	for (const space of activeSpaces) {
 		const page = await browser.newPage();
