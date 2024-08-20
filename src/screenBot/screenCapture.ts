@@ -30,6 +30,7 @@ export const printBot = async () => {
 	});
 
 	for (const space of activeSpaces) {
+		try {
 		const page = await browser.newPage();
 
 		await page.goto(space.flyUrl);
@@ -47,6 +48,7 @@ export const printBot = async () => {
 
 		const pictureLink = await cloudinary.uploader.upload(
 			"src/screenBot/screenshot.png",
+		
 		);
 
 		await db
@@ -57,5 +59,7 @@ export const printBot = async () => {
 			.where(eq(spaces.id, space.id));
 
 		await page.close();
-	}
+	}catch(error) {
+} 
+}
 };
