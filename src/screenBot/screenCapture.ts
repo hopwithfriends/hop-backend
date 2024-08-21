@@ -53,7 +53,7 @@ export const printBot = async () => {
 			await db
 				.update(spaces)
 				.set({
-					thumbnail: pictureLink.url,
+					thumbnail: pictureLink.secure_url,
 				})
 				.where(eq(spaces.id, space.id));
 
