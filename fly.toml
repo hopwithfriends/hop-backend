@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for hop-backend on 2024-08-13T13:02:11+01:00
+# fly.toml app configuration file generated for hop-backend-dev on 2024-08-21T18:20:04+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'hop-backend'
+app = 'hop-backend-dev'
 primary_region = 'lhr'
 
 [build]
