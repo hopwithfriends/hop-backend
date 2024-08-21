@@ -29,8 +29,8 @@ async function startServer() {
 		process.exit(1);
 	}
 }
-printBot();
-setInterval(printBot, 30 * 60 * 1000);
+// printBot();
+// setInterval(printBot, 30 * 60 * 1000);
 startServer();
 
 export { db };
