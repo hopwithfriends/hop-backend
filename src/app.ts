@@ -135,6 +135,16 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", async (socket) => {
+	socket.on("friend_request", async (arg) => {
+		const userId = socket.handshake.auth.token;
+		const onlineFriends = await checkOnlineFriends(userId);
+		if (onlineFriends) {
+			for (const [userId, friendId] of Object.entries(onlineFriends)) {
+				io.to(friendId.socketId).emit("online_friends", "updated");
+			}
+		}
+	});
+
 	socket.on("space_request", async (arg) => {
 		const userId = socket.handshake.auth.token;
 		const onlineFriends = await checkOnlineFriends(userId);
@@ -157,16 +167,6 @@ io.on("connection", async (socket) => {
 		const socketId = socket.id;
 		const spaceId = arg;
 		await userLeaveSpaceStatus(userId);
-	});
-
-	socket.on("friend_request", async (arg) => {
-		const userId = socket.handshake.auth.token;
-		const onlineFriends = await checkOnlineFriends(userId);
-		if (onlineFriends) {
-			for (const [userId, friendId] of Object.entries(onlineFriends)) {
-				io.to(friendId.socketId).emit("online_friends", "updated");
-			}
-		}
 	});
 
 	socket.on("disconnect", async (arg) => {
