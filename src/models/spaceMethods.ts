@@ -295,6 +295,7 @@ export class SpaceMethods {
 					flyUrl: spaces.flyUrl,
 					theme: spaces.theme,
 					password: spaces.password,
+					thumbnail: spaces.thumbnail,
 				})
 				.from(spaceMembers)
 				.innerJoin(spaces, eq(spaceMembers.spaceId, spaces.id))
@@ -320,6 +321,7 @@ export class SpaceMethods {
 					flyUrl: spaces.flyUrl,
 					theme: spaces.theme,
 					password: spaces.password,
+					thumbnail: spaces.thumbnail,
 				})
 				.from(spaceMembers)
 				.innerJoin(spaces, eq(spaceMembers.spaceId, spaces.id))
