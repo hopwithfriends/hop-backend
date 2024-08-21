@@ -32,9 +32,7 @@ export const printBot = async () => {
 	for (const space of activeSpaces) {
 		try {
 			const page = await browser.newPage();
-
 			await page.goto(space.flyUrl);
-
 			await page.setViewport({ width: 1920, height: 1024 });
 			await page.locator("text/Connect").click();
 			await delay(2000);
@@ -53,11 +51,13 @@ export const printBot = async () => {
 			await db
 				.update(spaces)
 				.set({
-					thumbnail: pictureLink.secure_url,
+					thumbnail: pictureLink.url,
 				})
 				.where(eq(spaces.id, space.id));
 
 			await page.close();
-		} catch (err) {}
+		} catch (error) {
+			console.error(error);
+		}
 	}
 };
