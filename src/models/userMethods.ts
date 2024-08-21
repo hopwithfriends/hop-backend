@@ -337,24 +337,32 @@ export class UserMethods {
 	}
 
 	async addSpaceStatus(userId: string, spaceId: string) {
-		const currentUserStatus = await db
-			.select()
-			.from(userStatus)
-			.where(eq(userStatus.userId, userId));
-		console.log(currentUserStatus);
-		if (currentUserStatus.length === 0) {
-			await db.insert(userStatus).values({ userId, spaceId });
+		try {
+			const currentUserStatus = await db
+				.select()
+				.from(userStatus)
+				.where(eq(userStatus.userId, userId));
+			console.log(currentUserStatus);
+			if (currentUserStatus.length === 0) {
+				await db.insert(userStatus).values({ userId, spaceId });
+				return true;
+			}
+			await db
+				.update(userStatus)
+				.set({ spaceId: spaceId })
+				.where(eq(userStatus.userId, userId));
 			return true;
+		} catch (error) {
+			console.error(error);
 		}
-		await db
-			.update(userStatus)
-			.set({ spaceId: spaceId })
-			.where(eq(userStatus.userId, userId));
-		return true;
 	}
 
 	async removeSpaceStatus(userId: string) {
-		await db.update(userStatus).set({ userId, spaceId: null });
+		try {
+			await db.update(userStatus).set({ userId, spaceId: null });
+		} catch (error) {
+			console.error(error);
+		}
 	}
 }
 
