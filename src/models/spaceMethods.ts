@@ -245,9 +245,23 @@ export class SpaceMethods {
 
 	async findAllSpaceRequests(userId: string) {
 		return await db
-			.select()
+			.select({
+				id: spaceRequests.id,
+				spaceId: {
+					id: spaces.id,
+					name: spaces.name,
+				},
+				inviterId: {
+					id: users.id,
+					username: users.username,
+					profilePicture: users.profilePicture,
+				},
+				role: spaceRequests.role,
+			})
 			.from(spaceRequests)
-			.where(eq(spaceRequests.invitedId, userId));
+			.where(eq(spaceRequests.invitedId, userId))
+			.leftJoin(spaces, eq(spaces.id, spaceRequests.spaceId))
+			.leftJoin(users, eq(users.id, spaceRequests.inviterId));
 	}
 
 	async removeUserFromSpace(spaceId: string, adminId: string, userId: string) {
