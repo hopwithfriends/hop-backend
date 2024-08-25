@@ -179,9 +179,7 @@ export class SpaceMethods {
 				)
 				.then((result) => result[0]);
 
-			console.log("memberExists", memberExists);
 			if (memberExists) return false;
-
 			await db.insert(spaceRequests).values(validatedSpaceMember);
 
 			return true;
