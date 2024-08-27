@@ -43,7 +43,6 @@ export const printBot = async () => {
 			await page.locator("text/Send Password").click();
 			await delay(2000);
 			await page.screenshot({ path: "src/screenBot/screenshot.png" });
-
 			const pictureLink = await cloudinary.uploader.upload(
 				"src/screenBot/screenshot.png",
 			);

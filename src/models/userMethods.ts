@@ -197,17 +197,12 @@ export class UserMethods {
 				return false;
 			}
 			await db.transaction(async (tx) => {
-				try {
-					await tx
-						.insert(friends)
-						.values({ userId: user.id, friendId: friend.id });
-					await tx
-						.insert(friends)
-						.values({ userId: friend.id, friendId: user.id });
-				} catch (error) {
-					await tx.rollback();
-					throw error;
-				}
+				await tx
+					.insert(friends)
+					.values({ userId: user.id, friendId: friend.id });
+				await tx
+					.insert(friends)
+					.values({ userId: friend.id, friendId: user.id });
 			});
 			return true;
 		} catch (error) {
@@ -219,21 +214,16 @@ export class UserMethods {
 	async deleteFriend(userId: string, friendId: string): Promise<boolean> {
 		try {
 			await db.transaction(async (tx) => {
-				try {
-					await tx
-						.delete(friends)
-						.where(
-							and(eq(friends.userId, userId), eq(friends.friendId, friendId)),
-						);
-					await tx
-						.delete(friends)
-						.where(
-							and(eq(friends.userId, friendId), eq(friends.friendId, userId)),
-						);
-				} catch (error) {
-					await tx.rollback();
-					throw error;
-				}
+				await tx
+					.delete(friends)
+					.where(
+						and(eq(friends.userId, userId), eq(friends.friendId, friendId)),
+					);
+				await tx
+					.delete(friends)
+					.where(
+						and(eq(friends.userId, friendId), eq(friends.friendId, userId)),
+					);
 			});
 			return true;
 		} catch (error) {
